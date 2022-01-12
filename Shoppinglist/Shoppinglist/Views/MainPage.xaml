@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:Shoppinglist.ViewModels" xmlns:models="clr-namespace:Shoppinglist.Models" x:DataType="viewmodels:MainPageViewModel"
+             x:Class="Shoppinglist.MainPage">
+
+   
+    <Grid x:Name="mainGrid" Padding="10">
+        <ScrollView >
+        <Grid x:Name="grid" 
+              HorizontalOptions="Fill" >
+                <Grid.RowDefinitions >
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+             
+        </Grid>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>
