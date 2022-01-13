@@ -16,7 +16,7 @@ namespace Shoppinglist
             {
                 if (db == null)
                 {
-                    db= new Database(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ShoppingList.db1"));
+                    db= new Database(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ShoppingList.db2"));
                 }
                 return db;
             }

@@ -12,7 +12,17 @@ namespace Shoppinglist.Models
         public int Id { get; set; }
         public string ListName { get; set; }
         public string ItemName { get; set; }
-        public Color ListColor { get; set; }
+       
+        public bool ListCBIsChecked { get; set; }
+        public string ListColor { get; set; }
+       
+        [Ignore]
+        public Color ListCBColor { get; set; }
+        [Ignore]
+        public CheckBox ListCheckBox { get; set; }
+        [Ignore]
         public TextDecorations Decorations { get; set; }
+
+
     }
 }
