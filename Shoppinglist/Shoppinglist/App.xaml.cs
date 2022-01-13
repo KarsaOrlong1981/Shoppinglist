@@ -10,17 +10,30 @@ namespace Shoppinglist
     {
         public static NavigationPage NavPage { get; set; }
         private static Database db;
+        private static DatabaseLists dbLists;
         public static Database Db
         {
             get
             {
                 if (db == null)
                 {
-                    db= new Database(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ShoppingList.db2"));
+                    db = new Database(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ShoppingList.db4"));
                 }
                 return db;
             }
         }
+        public static DatabaseLists DbLists
+        {
+            get
+            {
+                if (dbLists == null)
+                {
+                    dbLists = new DatabaseLists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Listen.db2"));
+                }
+                return dbLists;
+            }
+        }
+    
         public App()
         {
             InitializeComponent();
