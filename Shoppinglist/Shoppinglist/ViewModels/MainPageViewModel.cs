@@ -6,12 +6,16 @@ using System.Diagnostics;
 using System.Text;
 using Xamarin.Forms;
 
+
 namespace Shoppinglist.ViewModels
 {
+    
     public class MainPageViewModel : BaseVM
     {
+       
         #region Fields
         Grid mainGrid,grid;
+        Frame frameNamelist;
         Label lab_newList, lab_newListColor;
         Entry entryNewList, entryNewItem;
         CheckBox checkBoxColor1, checkBoxColor2, checkBoxColor3, checkBoxColor4;
@@ -62,16 +66,22 @@ namespace Shoppinglist.ViewModels
         private void NewShoppingList()
         {
             //Name liste, farbe liste, 
+            mainPage.Title = "Neue Liste erstellen";
             grid.Children.Clear();
-            lab_newList =  CreateLabel("Den Namen der Liste eingeben",LayoutOptions.StartAndExpand, LayoutOptions.CenterAndExpand, 0);
-            entryNewList = CreateEntry("Name der Liste", LayoutOptions.StartAndExpand, LayoutOptions.CenterAndExpand, 1);
+            CreateToolBarItem();
+            frameNamelist = CreateFrame(Color.FromHex("#86AC41"), LayoutOptions.CenterAndExpand, LayoutOptions.FillAndExpand, 1);
+            ImageButton imgNameList = CreateImageButton(0, "hinweis48.png");
+            lab_newList = CreateLabel("Den Namen der Liste eingeben", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, 0);
+            entryNewList = CreateEntry("Name der Liste", LayoutOptions.CenterAndExpand, LayoutOptions.FillAndExpand, Color.FromHex("#86AC41"), Color.Gray, Color.White);
+            frameNamelist.Content = entryNewList;
             entryNewList.TextChanged += EntryNewList_TextChanged;
+            ImageButton imgChooseColor = CreateImageButton(2, "hinweis48.png");
             lab_newListColor = CreateLabel("Die Farbe der Liste wählen", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, 2);
-            checkBoxColor1 = CreateCheckBox(LayoutOptions.CenterAndExpand,3);
-            checkBoxColor2 = CreateCheckBox(LayoutOptions.CenterAndExpand,4);
-            checkBoxColor3 = CreateCheckBox(LayoutOptions.CenterAndExpand,5);
-            checkBoxColor4 = CreateCheckBox(LayoutOptions.CenterAndExpand,6);
-            CreateColorLabel(Color.FromHex("#336b87"), "Stone", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand,3);
+            checkBoxColor1 = CreateCheckBox(LayoutOptions.CenterAndExpand, 3);
+            checkBoxColor2 = CreateCheckBox(LayoutOptions.CenterAndExpand, 4);
+            checkBoxColor3 = CreateCheckBox(LayoutOptions.CenterAndExpand, 5);
+            checkBoxColor4 = CreateCheckBox(LayoutOptions.CenterAndExpand, 6);
+            CreateColorLabel(Color.FromHex("#336b87"), "Stone", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, 3);
             CreateColorLabel(Color.FromHex("#598234"), "Meadow", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, 4);
             CreateColorLabel(Color.FromHex("#07575B"), "Ocean", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, 5);
             CreateColorLabel(Color.FromHex("#2A3132"), "Shadow", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, 6);
@@ -82,16 +92,32 @@ namespace Shoppinglist.ViewModels
                 BorderWidth = 4,
                 TextColor = Color.White,
                 BackgroundColor = Color.FromHex("#86AC41"),
-                FontSize = 30.0,
-                HorizontalOptions = LayoutOptions.FillAndExpand
+                FontSize = 25.0,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                VerticalOptions = LayoutOptions.EndAndExpand,
             };
             checkBoxColor1.IsChecked = true;
             btn_OK.IsEnabled = false;
             btn_OK.Clicked += Btn_OK_Clicked;
             Grid.SetRow(btn_OK, 7);
             grid.Children.Add(btn_OK);
-           
         }
+
+        private ImageButton CreateImageButton(short row, string imgPath)
+        {
+            ImageButton imageButton = new ImageButton
+            {
+                Source = imgPath,
+                BackgroundColor = Color.Transparent,
+                VerticalOptions = LayoutOptions.CenterAndExpand,
+                HorizontalOptions = LayoutOptions.StartAndExpand,
+                IsEnabled = false
+            };
+            Grid.SetRow(imageButton, row);
+            grid.Children.Add(imageButton);
+            return imageButton;
+        }
+
         private void CreateToolBarItem()
         {
             ToolbarItem item = new ToolbarItem
@@ -104,6 +130,20 @@ namespace Shoppinglist.ViewModels
             item.Clicked += ToolBarItem_Clicked;
             mainPage.ToolbarItems.Add(item);
         }
+        private Frame CreateFrame(Color color, LayoutOptions vertOptions, LayoutOptions horOptions, short row)
+        {
+            Frame frame = new Frame
+            {
+                BackgroundColor = color,
+                VerticalOptions =vertOptions,
+                HorizontalOptions = horOptions,
+                CornerRadius = 10,
+                HasShadow = true,
+            };
+            Grid.SetRow(frame, row);
+            grid.Children.Add(frame);
+            return frame;
+        }
         private void CreateColorLabel(Color color, string txt, LayoutOptions vertOptions, LayoutOptions horOptions, short row)
         {
             Label label = new Label
@@ -111,7 +151,7 @@ namespace Shoppinglist.ViewModels
                 BackgroundColor = color,
                 Text = txt,
                 TextColor = Color.White,
-                FontSize = 16.0,
+                FontSize = 25.0,
                 WidthRequest = 200,
                 HorizontalTextAlignment = TextAlignment.Center,
                 HorizontalOptions = horOptions,
@@ -125,7 +165,9 @@ namespace Shoppinglist.ViewModels
             Label lab = new Label
             {
                 Text = txt,
-                FontSize = 16.0,
+                FontSize = 20.0,
+                FontAttributes = FontAttributes.Bold,
+                FontFamily = "NanumPenScript-Regular",
                 TextColor = foregroundColor,
                 HorizontalOptions = horOptions,
                 VerticalOptions = vertOptions
@@ -140,7 +182,8 @@ namespace Shoppinglist.ViewModels
             {
                 Color = Color.Green,
                 HorizontalOptions = LayoutOptions.StartAndExpand,
-                VerticalOptions = vertOptions
+                VerticalOptions = vertOptions,
+                
             };
             Grid.SetRow(checkBox, row);
             grid.Children.Add(checkBox);
@@ -148,14 +191,14 @@ namespace Shoppinglist.ViewModels
             
             return checkBox;
         }
-        private Entry CreateEntry(string txt, LayoutOptions vertOptions, LayoutOptions horOptions, short row)
+        private Entry CreateEntry(string txt, LayoutOptions vertOptions, LayoutOptions horOptions, Color background, Color placeholder, Color text)
         {
             Entry entry = new Entry
             {
                 Placeholder = txt,
-                PlaceholderColor = Color.Gray,
-                BackgroundColor = Color.White,
-                TextColor = Color.Black,
+                PlaceholderColor = placeholder,
+                BackgroundColor = background,
+                TextColor = text,
                 MaxLength = 25,
                 ClearButtonVisibility = ClearButtonVisibility.WhileEditing,
                 FontSize = 16.0,
@@ -163,13 +206,11 @@ namespace Shoppinglist.ViewModels
                 HorizontalOptions = horOptions,
                 VerticalOptions = vertOptions
             };
-            Grid.SetRow(entry, row);
-            grid.Children.Add(entry);
+          
             return entry;
         }
         private void CreateListView(short row, ShopItems shopitem)
         {
-            
             if (this.listView != null)
             {
                 grid.Children.Remove(this.listView);
@@ -357,8 +398,11 @@ namespace Shoppinglist.ViewModels
                 
             };
             btn_Ready.Clicked += Btn_Ready_Clicked;
-            entryNewItem = CreateEntry("Artikel hinzufügen", LayoutOptions.StartAndExpand, LayoutOptions.FillAndExpand, 0);
+            entryNewItem = CreateEntry("Artikel hinzufügen", LayoutOptions.StartAndExpand, LayoutOptions.FillAndExpand, Color.White, Color.Gray, Color.Black);
             entryNewItem.Completed += EntryNewItem_Completed;
+            Grid.SetRow(entryNewItem, 0);
+           
+            grid.Children.Add(entryNewItem);
             mainGrid.Children.Add(btn_Ready);
         }
 
@@ -387,10 +431,8 @@ namespace Shoppinglist.ViewModels
             shopitem.ItemName = txt;
             shopitem.ListName = listName;
             shopitem.Tag = tag;
-            
             createList.Add(shopitem);
             CreateListView(1, shopitem);
-
             entryNewItem.Text = "";
             entryNewItem.Focus();
         }
@@ -408,31 +450,38 @@ namespace Shoppinglist.ViewModels
         private void ListView_ItemTapped(object sender, ItemTappedEventArgs e)
         {
             var itemData = (sender as ListView).SelectedItem as ShopItems;
-          
-           
-                createList.Remove(itemData);
-                IsListEmpty();
-                listView.SelectedItem = null;
-                grid.Children.Remove(listView);
-                CreateListView(1, itemData);
-            
+            createList.Remove(itemData);
+            IsListEmpty();
+            listView.SelectedItem = null;
+            grid.Children.Remove(listView);
+            CreateListView(1, itemData);
         }
         #endregion Events CreateList
-
         #endregion Create new List
         #region Main Menue
         #region Methods Main Menue
         private void MainMenue()
         {
             // auswahl neue liste erstellen,
-            // bestand bereits angelegter listen einsehen und auswählen, 
+            // bestand bereits angelegter listen einsehen und auswählen, Listen bearbeiten und Löschen
             mainPage.Title = "Hauptmenue";
-            
-            CreateMainmenueBTN("Neue Liste erstellen", "neueListe48.png", 0);
-            CreateMainmenueBTN("Liste Wählen", "einkauf48.png" ,1);
-           
+            SetMainImg();
+            CreateMainmenueBTN("Neue Liste erstellen", "neueListe48.png", 1);
+            CreateMainmenueBTN("Liste Wählen", "einkauf48.png" ,2);
+            CreateMainmenueBTN("Listen Verwalten", "edit48.png", 3);
+            //Liste bearbeiten fehlt
+            //Liste Löschen fehlt
         }
-
+        private void SetMainImg()
+        {
+            Image img = new Image
+            {
+                Source = "shopList.png",
+                Aspect = Aspect.AspectFill
+            };
+            Grid.SetRow(img , 0);
+            grid.Children.Add(img);
+        }
         private void CreateMainmenueBTN(string txt,string icon, short row)
         {
             Button btn = new Button
@@ -456,8 +505,36 @@ namespace Shoppinglist.ViewModels
             grid.Children.Clear();
             mainPage.Title = "Liste Wählen";
             GetListNames();
-           
         }
+
+        private void SetInfoToDoDone()
+        {
+            Label lab_InfoToDo = new Label
+            {
+                Text = "Noch zu erledigen",
+                VerticalOptions = LayoutOptions.CenterAndExpand,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                HorizontalTextAlignment = TextAlignment.Center,
+                FontAttributes = FontAttributes.Bold,
+                FontSize = 25,
+                TextColor = Color.FromHex("#C9FF00")
+            };
+            Label lab_InfoDone = new Label
+            {
+                Text = "Erledigt",
+                VerticalOptions = LayoutOptions.CenterAndExpand,
+                HorizontalOptions = LayoutOptions.FillAndExpand,
+                HorizontalTextAlignment= TextAlignment.Center,
+                FontAttributes = FontAttributes.Bold,
+                FontSize = 25,
+                TextColor = Color.FromHex("#C9FF00")
+            };
+            Grid.SetRow(lab_InfoToDo, 0);
+            Grid.SetRow(lab_InfoDone, 2);
+            grid.Children.Add(lab_InfoToDo);
+            grid.Children.Add(lab_InfoDone);
+        }
+
         private void ListNamesView()
         {
             listNamesView = new ListView
@@ -468,8 +545,10 @@ namespace Shoppinglist.ViewModels
                     Label lab = new Label();
                     lab.SetBinding(Label.TextProperty, "ListName");
                    
-                    lab.FontSize = 16.0;
+                    lab.FontSize = 20.0;
                     lab.TextColor = foregroundColor;
+                    lab.FontAttributes = FontAttributes.Bold;
+                    lab.FontFamily = "AD";
                     lab.VerticalOptions = LayoutOptions.Center;
                     lab.HorizontalOptions = LayoutOptions.End;
                     lab.HorizontalTextAlignment = TextAlignment.Start;
@@ -520,8 +599,10 @@ namespace Shoppinglist.ViewModels
                     Label lab = new Label();
                     lab.SetBinding(Label.TextProperty, "ItemName");
                     lab.SetBinding(Label.TextDecorationsProperty, "Decorations");
-                    lab.FontSize = 16.0;
+                    lab.FontSize = 20.0;
                     lab.TextColor = foregroundColor;
+                    lab.FontAttributes = FontAttributes.Bold;
+                    lab.FontFamily = "AD";
                     lab.VerticalOptions = LayoutOptions.Center;
                     lab.HorizontalOptions = LayoutOptions.End;
                     lab.HorizontalTextAlignment = TextAlignment.Start;
@@ -565,12 +646,9 @@ namespace Shoppinglist.ViewModels
             };
             listViewStrikedItem.ItemTapped += ListViewStrikedItem_ItemTapped;
             gridStricked.Children.Add(listViewStrikedItem);
-            Grid.SetRow(gridStricked, 1);
+            Grid.SetRow(gridStricked, 3);
             grid.Children.Add(gridStricked);
         }
-
-       
-
         private void ListItemView(string title,  ShopItems si)
         {
             grid.Children.Clear();
@@ -593,8 +671,10 @@ namespace Shoppinglist.ViewModels
                     Label lab = new Label();
                     lab.SetBinding(Label.TextProperty, "ItemName");
                     lab.SetBinding(Label.TextDecorationsProperty, "Decorations");
-                    lab.FontSize = 16.0;
+                    lab.FontSize = 20.0;
                     lab.TextColor = foregroundColor;
+                    lab.FontAttributes = FontAttributes.Bold;
+                    lab.FontFamily = "AD";
                     lab.VerticalOptions = LayoutOptions.Center;
                     lab.HorizontalOptions = LayoutOptions.End;
                     lab.HorizontalTextAlignment = TextAlignment.Start;
@@ -638,11 +718,9 @@ namespace Shoppinglist.ViewModels
             };
             listItemView.ItemTapped += ListItemView_ItemTapped;
             gridStricked.Children.Add(listItemView);
-            Grid.SetRow(gridStricked, 0);
+            Grid.SetRow(gridStricked, 1);
             grid.Children.Add(gridStricked);
         }
-    
-    
         #endregion Methods Main Menue
         #region Events mainMenue
         //Event bei auswahl der Liste
@@ -655,6 +733,7 @@ namespace Shoppinglist.ViewModels
             foregroundColor = Color.White;
             LoadListFromDB(itemData.ListName);
             ListItemView(itemData.ListName, shopitem);
+            SetInfoToDoDone();
             listNamesView.SelectedItem = null;
            
         }
@@ -685,7 +764,7 @@ namespace Shoppinglist.ViewModels
 
             ListItemView(itemData.ListName, itemData);
             ListStrikedItems(itemData);
-
+            SetInfoToDoDone();
 
         }
         //Event liste unten
@@ -733,9 +812,10 @@ namespace Shoppinglist.ViewModels
             listItemView.SelectedItem = null;
             ListItemView(itemData.ListName, itemData);
             ListStrikedItems(itemData);
+            SetInfoToDoDone();
         }
 
-        private static void SelectDb()
+        private static void SelectFromDb()
         {
             for (int i = 0; i < App.Db.GetAllItemsAsync().Result.Count; i++)
             {
