@@ -17,7 +17,7 @@ namespace Shoppinglist
             {
                 if (db == null)
                 {
-                    db = new Database(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ShoppingList.db4"));
+                    db = new Database(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ShoppingList.db7"));
                 }
                 return db;
             }
@@ -28,7 +28,7 @@ namespace Shoppinglist
             {
                 if (dbLists == null)
                 {
-                    dbLists = new DatabaseLists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Listen.db2"));
+                    dbLists = new DatabaseLists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Listen.db5"));
                 }
                 return dbLists;
             }
@@ -37,7 +37,7 @@ namespace Shoppinglist
         public App()
         {
             InitializeComponent();
-            NavPage = new NavigationPage(new MainPage()) { BarBackgroundColor = Color.White, BarTextColor = Color.Black }; 
+            NavPage = new NavigationPage(new MainPage()) { BarBackgroundColor = Color.FromHex("#86AC41"), BarTextColor = Color.White }; 
             MainPage = NavPage;
 
         }

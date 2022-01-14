@@ -2,6 +2,7 @@
 using Shoppinglist.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Xamarin.Forms;
 
@@ -12,10 +13,10 @@ namespace Shoppinglist.ViewModels
         #region Fields
         Grid mainGrid,grid;
         Label lab_newList, lab_newListColor;
-        Entry entryNewList, entryNewItem, entryDescript, entryNumbers;
+        Entry entryNewList, entryNewItem;
         CheckBox checkBoxColor1, checkBoxColor2, checkBoxColor3, checkBoxColor4;
         Color backgroundColor, foregroundColor;
-        Button btn_OK, btn_Ready, btn_LoadList, btn_CreateList;
+        Button btn_OK, btn_Ready;
         ListView listView, listNamesView, listItemView, listViewStrikedItem;
         MainPage mainPage;
         TextDecorations decorations;
@@ -23,7 +24,8 @@ namespace Shoppinglist.ViewModels
         public List<ShopItems> createList, shopListItems, strikedItemList;
         public List<SavedLists> shopListNames;
         string listColor;
-        string listName, mode;
+        string listName;
+        
         #endregion Fields
         #region Property Change 
         public TextDecorations Decorations 
@@ -165,9 +167,9 @@ namespace Shoppinglist.ViewModels
             grid.Children.Add(entry);
             return entry;
         }
-        private void CreateListView(short row, ShopItems shopitem, string mode)
+        private void CreateListView(short row, ShopItems shopitem)
         {
-            this.mode = mode;
+            
             if (this.listView != null)
             {
                 grid.Children.Remove(this.listView);
@@ -181,11 +183,6 @@ namespace Shoppinglist.ViewModels
                 {
                     Label lab = new Label();
                     lab.SetBinding(Label.TextProperty, "ItemName");
-                    if (mode == "ShowList")
-                    {
-                        lab.SetBinding(Label.TextDecorationsProperty, "Decorations");
-
-                    }
                     lab.FontSize = 16.0;
                     lab.TextColor = foregroundColor;
                     lab.VerticalOptions = LayoutOptions.Center;
@@ -343,6 +340,7 @@ namespace Shoppinglist.ViewModels
         }
         private void Btn_OK_Clicked(object sender, EventArgs e)
         {
+            mainPage.Title = "Neue Liste Erstellen";
             CreateToolBarItem();
             CheckBoxesColor();
             btn_Ready = new Button
@@ -350,7 +348,8 @@ namespace Shoppinglist.ViewModels
                 Text = "Ready",
                 BorderColor = Color.Black,
                 BorderWidth = 4,
-                TextColor = Color.Black,
+                TextColor = Color.White,
+                BackgroundColor = Color.FromHex("#86AC41"),
                 FontSize = 16.0,
                 HorizontalOptions = LayoutOptions.FillAndExpand,
                 VerticalOptions = LayoutOptions.EndAndExpand,
@@ -365,12 +364,13 @@ namespace Shoppinglist.ViewModels
 
         private void Btn_Ready_Clicked(object sender, EventArgs e)
         {
-            
-            
+           
             //Liste übernehmen und in Datenbank Speichern
             foreach (var item in createList)
             {
-                AddItemToDB(item.ListName, item.ItemName);
+               
+                AddItemToDB(item.Tag, item.ListName, item.ItemName);
+               
             }
             AddListToDB(mainPage.Title, listColor);
             WriteToast.ShowLongToast("Liste wurde gespeichert");
@@ -379,14 +379,17 @@ namespace Shoppinglist.ViewModels
        
         private void EntryNewItem_Completed(object sender, EventArgs e)
         {
+            DateTime date = DateTime.Now;
+            string tag = entryNewItem.Text + date.Hour + date.Minute + date.Second + date.Millisecond;
             string txt = entryNewItem.Text;
             IsListEmpty();
             shopitem = new ShopItems();
             shopitem.ItemName = txt;
             shopitem.ListName = listName;
+            shopitem.Tag = tag;
             
             createList.Add(shopitem);
-            CreateListView(1, shopitem, "CreateList");
+            CreateListView(1, shopitem);
 
             entryNewItem.Text = "";
             entryNewItem.Focus();
@@ -411,7 +414,7 @@ namespace Shoppinglist.ViewModels
                 IsListEmpty();
                 listView.SelectedItem = null;
                 grid.Children.Remove(listView);
-                CreateListView(1, itemData, "CreateList");
+                CreateListView(1, itemData);
             
         }
         #endregion Events CreateList
@@ -451,6 +454,7 @@ namespace Shoppinglist.ViewModels
         private void LoadShoppingList()
         {
             grid.Children.Clear();
+            mainPage.Title = "Liste Wählen";
             GetListNames();
            
         }
@@ -503,6 +507,7 @@ namespace Shoppinglist.ViewModels
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center
             };
+           
             listViewStrikedItem = new ListView
             {
                 ItemsSource = strikedItemList,
@@ -523,6 +528,7 @@ namespace Shoppinglist.ViewModels
                     si.ListCheckBox = new CheckBox();
                     si.ListCheckBox.SetBinding(CheckBox.IsCheckedProperty, "ListCBIsChecked");
                     si.ListCheckBox.SetBinding(CheckBox.ColorProperty, "ListCBColor");
+                    si.ListCheckBox.IsEnabled = false;
                     if (si.ListCBIsChecked)
                     {
                         si.ListCBColor = Color.GreenYellow;
@@ -563,30 +569,13 @@ namespace Shoppinglist.ViewModels
             grid.Children.Add(gridStricked);
         }
 
-        private void ListViewStrikedItem_ItemTapped(object sender, ItemTappedEventArgs e)
-        {
-            var itemData = (sender as ListView).SelectedItem as ShopItems;
-            if (itemData.ListCBIsChecked == false)
-            {
-                itemData.ListCBIsChecked = true;
-               
-            }
-            else
-            {
-                itemData.ListCBIsChecked = false;
-                strikedItemList.Remove(itemData);
-                shopListItems.Add(itemData);
-                AddItemToDB(itemData.ListName, itemData.ItemName);
-            }
-            listItemView.SelectedItem = null;
-            ListItemView(itemData.ListName, itemData);
-            ListStrikedItems(itemData);
-        }
+       
 
         private void ListItemView(string title,  ShopItems si)
         {
             grid.Children.Clear();
             mainPage.Title = title;
+          
             Grid gridStricked = new Grid
             {
                 HorizontalOptions = LayoutOptions.Center,
@@ -612,6 +601,7 @@ namespace Shoppinglist.ViewModels
                     si.ListCheckBox = new CheckBox();
                     si.ListCheckBox.SetBinding(CheckBox.IsCheckedProperty, "ListCBIsChecked");
                     si.ListCheckBox.SetBinding(CheckBox.ColorProperty, "ListCBColor");
+                    si.ListCheckBox.IsEnabled = false;
                     if (si.ListCBIsChecked)
                     {
                         si.ListCBColor = Color.GreenYellow;
@@ -651,32 +641,8 @@ namespace Shoppinglist.ViewModels
             Grid.SetRow(gridStricked, 0);
             grid.Children.Add(gridStricked);
         }
-        //Event bei auswahl eines Item
-        private void ListItemView_ItemTapped(object sender, ItemTappedEventArgs e)
-        {
-            var itemData = (sender as ListView).SelectedItem as ShopItems;
-           
-                if (itemData.ListCBIsChecked == false)
-                {
-                    itemData.ListCBIsChecked = true;
-                    shopListItems.Remove(itemData);
-                    itemData.ListCheckBox = new CheckBox();
-                    itemData.ListCheckBox.IsChecked = true;
-                    strikedItemList.Add(itemData);
-                    DeleteFromDB(itemData.Id);
-                }
-                else
-                {
-                    itemData.ListCBIsChecked = false;
-                    //AddItemToDB(itemData.ListName, itemData.ItemName);
-                }
-                listItemView.SelectedItem = null;
-           
-            ListItemView(itemData.ListName, itemData);
-            ListStrikedItems(itemData);
-
-
-        }
+    
+    
         #endregion Methods Main Menue
         #region Events mainMenue
         //Event bei auswahl der Liste
@@ -692,6 +658,93 @@ namespace Shoppinglist.ViewModels
             listNamesView.SelectedItem = null;
            
         }
+        //Event liste oben
+        private void ListItemView_ItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            var itemData = (sender as ListView).SelectedItem as ShopItems;
+           
+            if (itemData.ListCBIsChecked == false)
+            {
+                itemData.ListCBIsChecked = true;
+                shopListItems.Remove(itemData);
+                itemData.ListCheckBox = new CheckBox();
+                itemData.ListCheckBox.IsChecked = true;
+                strikedItemList.Add(itemData);
+
+                
+                DeleteFromDB(itemData.Id);
+                
+              
+            }
+            else
+            {
+                itemData.ListCBIsChecked = false;
+                //AddItemToDB(itemData.ListName, itemData.ItemName);
+            }
+            listItemView.SelectedItem = null;
+
+            ListItemView(itemData.ListName, itemData);
+            ListStrikedItems(itemData);
+
+
+        }
+        //Event liste unten
+        private void ListViewStrikedItem_ItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            var itemData = (sender as ListView).SelectedItem as ShopItems;
+            if (itemData.ListCBIsChecked == false)
+            {
+                itemData.ListCBIsChecked = true;
+
+            }
+            else
+            {
+                itemData.ListCBIsChecked = false;
+                strikedItemList.Remove(itemData);
+                if (!(shopListItems.Contains(itemData)))
+                {
+                    bool hit = false;
+                    itemData.ListCheckBox = new CheckBox();
+                    itemData.ListCheckBox.IsChecked = false;
+                    for (int i = 0; i < App.Db.GetAllItemsAsync().Result.Count; i++)
+                    {
+                        if (App.Db.GetAllItemsAsync().Result[i] == itemData)
+                        {
+                            hit = true;
+                        }
+                    }
+                    if (hit == false)
+                    {
+                        AddItemToDB(itemData.Tag,itemData.ListName, itemData.ItemName);
+                    }
+                    
+                    for (int i = 0; i < App.Db.GetAllItemsAsync().Result.Count; i++)
+                    { // ein tag hinzufügen
+                        if (App.Db.GetAllItemsAsync().Result[i].Tag == itemData.Tag)
+                        {
+                            ShopItems si = App.Db.GetAllItemsAsync().Result[i];
+                            if (!(shopListItems.Contains(si)))
+                            shopListItems.Add(si);
+                        }
+                    }
+                }
+
+            }
+            listItemView.SelectedItem = null;
+            ListItemView(itemData.ListName, itemData);
+            ListStrikedItems(itemData);
+        }
+
+        private static void SelectDb()
+        {
+            for (int i = 0; i < App.Db.GetAllItemsAsync().Result.Count; i++)
+            {
+                int id = App.Db.GetAllItemsAsync().Result[i].Id;
+                ShopItems art = App.Db.GetItemAsync(id).Result;
+                Debug.WriteLine(art.ItemName + " " + art.Id);
+            }
+        }
+
         private void Btn_Clicked(object sender, EventArgs e)
         {
             string options = (sender as Button).Text;
@@ -704,10 +757,11 @@ namespace Shoppinglist.ViewModels
         #endregion Events mainMenue
         #endregion Main Menue
         #region Database
-        private async void AddItemToDB(string listName, string itemName)
+        private async void AddItemToDB(string tag,string listName, string itemName)
         {
             await App.Db.AddToDBAsync(new Models.ShopItems
             {
+                Tag = tag,
                 ListName = listName,
                 ItemName = itemName,
             });
@@ -717,6 +771,7 @@ namespace Shoppinglist.ViewModels
         {
             await App.DbLists.AddToDBAsync(new Models.SavedLists
             {
+               
                 ListName = listName,
                 ListColor = listColor
             });
