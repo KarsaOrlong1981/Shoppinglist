@@ -1008,7 +1008,7 @@ namespace Shoppinglist.ViewModels
             }
         }
         #endregion Database
-        private static void SelectFromDb()
+        private static void SelectAllFromDb()
         {
             for (int i = 0; i < App.Db.GetAllItemsAsync().Result.Count; i++)
             {
