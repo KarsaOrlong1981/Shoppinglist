@@ -35,7 +35,8 @@ namespace Shoppinglist
         }
     
         public App()
-        {
+        {   //
+            //
             InitializeComponent();
             NavPage = new NavigationPage(new MainPage()) { BarBackgroundColor = Color.FromHex("#86AC41"), BarTextColor = Color.White }; 
             MainPage = NavPage;

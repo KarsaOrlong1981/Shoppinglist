@@ -71,12 +71,12 @@ namespace Shoppinglist.ViewModels
             CreateToolBarItem();
             frameNamelist = CreateFrame(Color.FromHex("#86AC41"), LayoutOptions.CenterAndExpand, LayoutOptions.FillAndExpand, 1);
             ImageButton imgNameList = CreateImageButton(0, "hinweis48.png");
-            lab_newList = CreateLabel("Den Namen der Liste eingeben", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, 0);
+            lab_newList = CreateLabel("Den Namen der Liste eingeben", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, "NanumPenScript-Regular", 0);
             entryNewList = CreateEntry("Name der Liste", LayoutOptions.CenterAndExpand, LayoutOptions.FillAndExpand, Color.FromHex("#86AC41"), Color.Gray, Color.White);
             frameNamelist.Content = entryNewList;
             entryNewList.TextChanged += EntryNewList_TextChanged;
             ImageButton imgChooseColor = CreateImageButton(2, "hinweis48.png");
-            lab_newListColor = CreateLabel("Die Farbe der Liste wählen", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, 2);
+            lab_newListColor = CreateLabel("Die Farbe der Liste wählen", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, "NanumPenScript-Regular", 2);
             checkBoxColor1 = CreateCheckBox(LayoutOptions.CenterAndExpand, 3);
             checkBoxColor2 = CreateCheckBox(LayoutOptions.CenterAndExpand, 4);
             checkBoxColor3 = CreateCheckBox(LayoutOptions.CenterAndExpand, 5);
@@ -137,8 +137,10 @@ namespace Shoppinglist.ViewModels
                 BackgroundColor = color,
                 VerticalOptions =vertOptions,
                 HorizontalOptions = horOptions,
-                CornerRadius = 10,
+                CornerRadius = 20,
                 HasShadow = true,
+                BorderColor = Color.Black
+                
             };
             Grid.SetRow(frame, row);
             grid.Children.Add(frame);
@@ -160,14 +162,14 @@ namespace Shoppinglist.ViewModels
             Grid.SetRow(label, row);
             grid.Children.Add(label);
         }
-        private Label CreateLabel(string txt, LayoutOptions vertOptions, LayoutOptions horOptions, short row)
+        private Label CreateLabel(string txt, LayoutOptions vertOptions, LayoutOptions horOptions, string fontFam, short row)
         {
             Label lab = new Label
             {
                 Text = txt,
                 FontSize = 20.0,
                 FontAttributes = FontAttributes.Bold,
-                FontFamily = "NanumPenScript-Regular",
+                FontFamily = fontFam,
                 TextColor = foregroundColor,
                 HorizontalOptions = horOptions,
                 VerticalOptions = vertOptions
@@ -423,18 +425,27 @@ namespace Shoppinglist.ViewModels
        
         private void EntryNewItem_Completed(object sender, EventArgs e)
         {
-            DateTime date = DateTime.Now;
-            string tag = entryNewItem.Text + date.Hour + date.Minute + date.Second + date.Millisecond;
-            string txt = entryNewItem.Text;
-            IsListEmpty();
-            shopitem = new ShopItems();
-            shopitem.ItemName = txt;
-            shopitem.ListName = listName;
-            shopitem.Tag = tag;
-            createList.Add(shopitem);
-            CreateListView(1, shopitem);
-            entryNewItem.Text = "";
-            entryNewItem.Focus();
+            if (entryNewItem.Text == "")
+            {
+                entryNewItem.Focus();
+            }
+            else
+            {
+                DateTime date = DateTime.Now;
+                string tag = entryNewItem.Text + date.Hour + date.Minute + date.Second + date.Millisecond;
+                string txt = entryNewItem.Text;
+                IsListEmpty();
+                shopitem = new ShopItems();
+                shopitem.ItemName = txt;
+                shopitem.ListName = listName;
+                shopitem.Tag = tag;
+                createList.Add(shopitem);
+                CreateListView(1, shopitem);
+                entryNewItem.Focus();
+                entryNewItem.Text = "";
+            }
+           
+           
         }
 
         private void IsListEmpty()
@@ -445,6 +456,7 @@ namespace Shoppinglist.ViewModels
             }
             else
                 btn_Ready.IsEnabled = true;
+           
         }
 
         private void ListView_ItemTapped(object sender, ItemTappedEventArgs e)
@@ -466,9 +478,16 @@ namespace Shoppinglist.ViewModels
             // bestand bereits angelegter listen einsehen und auswählen, Listen bearbeiten und Löschen
             mainPage.Title = "Hauptmenue";
             SetMainImg();
-            CreateMainmenueBTN("Neue Liste erstellen", "neueListe48.png", 1);
-            CreateMainmenueBTN("Liste Wählen", "einkauf48.png" ,2);
-            CreateMainmenueBTN("Listen Verwalten", "edit48.png", 3);
+            Frame frame1 = CreateFrame(Color.FromHex("#86AC41"), LayoutOptions.CenterAndExpand, LayoutOptions.FillAndExpand, 1);
+            Frame frame2 = CreateFrame(Color.FromHex("#86AC41"), LayoutOptions.CenterAndExpand, LayoutOptions.FillAndExpand, 2);
+            Frame frame3 = CreateFrame(Color.FromHex("#86AC41"), LayoutOptions.CenterAndExpand, LayoutOptions.FillAndExpand, 3);
+            Button btn1 = CreateMainmenueBTN("Neue Liste erstellen", "neueListe48.png");
+            Button btn2 = CreateMainmenueBTN("Liste Wählen", "einkauf48.png");
+            Button btn3 = CreateMainmenueBTN("Listen Verwalten", "edit48.png");
+            frame1.Content = btn1;
+            frame2.Content = btn2;
+            frame3.Content = btn3;
+
             //Liste bearbeiten fehlt
             //Liste Löschen fehlt
         }
@@ -482,29 +501,26 @@ namespace Shoppinglist.ViewModels
             Grid.SetRow(img , 0);
             grid.Children.Add(img);
         }
-        private void CreateMainmenueBTN(string txt,string icon, short row)
+        private Button CreateMainmenueBTN(string txt,string icon)
         {
             Button btn = new Button
             {
                 Text = txt,
                 ImageSource = icon,
                 ContentLayout = new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Left, 0),
-                BorderColor = Color.Black,
-                BorderWidth = 4,
                 TextColor = Color.White,
                 BackgroundColor = Color.FromHex("#86AC41"),
                 FontSize = 20.0,
                 HorizontalOptions = LayoutOptions.FillAndExpand
             };
             btn.Clicked += Btn_Clicked;
-            Grid.SetRow(btn, row);
-            grid.Children.Add(btn);
+            return btn;
         }
         private void LoadShoppingList()
         {
             grid.Children.Clear();
             mainPage.Title = "Liste Wählen";
-            GetListNames();
+            GetListNames(false);
         }
 
         private void SetInfoToDoDone()
@@ -535,13 +551,18 @@ namespace Shoppinglist.ViewModels
             grid.Children.Add(lab_InfoDone);
         }
 
-        private void ListNamesView()
+        private void ListNamesView(bool edit)
         {
             listNamesView = new ListView
             {
                 ItemsSource = shopListNames,
                 ItemTemplate = new DataTemplate(() =>
                 {
+                    Image img = new Image();
+                    img.Source = "this24.png";
+                    img.VerticalOptions = LayoutOptions.CenterAndExpand;
+                    img.HorizontalOptions = LayoutOptions.StartAndExpand;
+                    
                     Label lab = new Label();
                     lab.SetBinding(Label.TextProperty, "ListName");
                    
@@ -567,6 +588,7 @@ namespace Shoppinglist.ViewModels
 
                                             Children =
                                             {
+                                                img,
                                                 lab
                                             }
                                         }
@@ -575,10 +597,21 @@ namespace Shoppinglist.ViewModels
                     };
                 })
             };
-            listNamesView.ItemTapped += ListView_ItemTapped1; ;
+            if (edit)
+            {
+                listNamesView.ItemTapped += ListNamesView_Edit_ItemTapped1;
+            }
+            else
+            {
+                listNamesView.ItemTapped += ListNamesView_ItemTapped; 
+            }
+            
             Grid.SetRow(listNamesView, 1);
             grid.Children.Add(listNamesView);
         }
+
+      
+
         private void ListStrikedItems(ShopItems si)
         {
             Grid gridStricked = new Grid
@@ -724,7 +757,7 @@ namespace Shoppinglist.ViewModels
         #endregion Methods Main Menue
         #region Events mainMenue
         //Event bei auswahl der Liste
-        private void ListView_ItemTapped1(object sender, ItemTappedEventArgs e)
+        private void ListNamesView_ItemTapped(object sender, ItemTappedEventArgs e)
         {
             var itemData = (sender as ListView).SelectedItem as SavedLists;
             mainPage.BackgroundColor = Color.FromHex(itemData.ListColor);
@@ -815,15 +848,7 @@ namespace Shoppinglist.ViewModels
             SetInfoToDoDone();
         }
 
-        private static void SelectFromDb()
-        {
-            for (int i = 0; i < App.Db.GetAllItemsAsync().Result.Count; i++)
-            {
-                int id = App.Db.GetAllItemsAsync().Result[i].Id;
-                ShopItems art = App.Db.GetItemAsync(id).Result;
-                Debug.WriteLine(art.ItemName + " " + art.Id);
-            }
-        }
+      
 
         private void Btn_Clicked(object sender, EventArgs e)
         {
@@ -832,10 +857,67 @@ namespace Shoppinglist.ViewModels
             {
                 case "Neue Liste erstellen": NewShoppingList(); break;
                 case "Liste Wählen": LoadShoppingList(); CreateToolBarItem(); break;
+                case "Listen Verwalten": Editlist(); CreateToolBarItem(); break;
             }
         }
         #endregion Events mainMenue
         #endregion Main Menue
+        #region Edit Lists
+        #region Methods
+        private void Editlist()
+        {
+            mainPage.Title = "Listen Verwalten";
+            grid.Children.Clear();
+            Frame frame1 = CreateFrame(Color.FromHex("#86AC41"), LayoutOptions.CenterAndExpand, LayoutOptions.FillAndExpand, 0);
+            Button btn_Edit = new Button
+            {
+                Text = "Liste Bearbeiten",
+                HorizontalOptions = LayoutOptions.CenterAndExpand, 
+                VerticalOptions = LayoutOptions.CenterAndExpand,
+                TextColor = Color.White,
+                FontSize = 20,
+                BackgroundColor = Color.FromHex("#86AC41"),
+
+            };
+            btn_Edit.Clicked += Btn_Edit_Clicked1;
+            frame1.Content = btn_Edit;
+            Frame frame2 = CreateFrame(Color.FromHex("#86AC41"), LayoutOptions.CenterAndExpand, LayoutOptions.FillAndExpand, 1);
+            Button btn_Delete = new Button
+            {
+                Text = "Liste Löschen",
+                HorizontalOptions = LayoutOptions.CenterAndExpand,
+                VerticalOptions = LayoutOptions.CenterAndExpand,
+                TextColor = Color.White,
+                FontSize = 20,
+                BackgroundColor = Color.FromHex("#86AC41"),
+
+            };
+            btn_Delete.Clicked += Btn_Delete_Clicked;
+            frame2.Content = btn_Delete;
+        }
+
+       
+
+        #endregion Methods
+        #region Events
+        private void Btn_Edit_Clicked1(object sender, EventArgs e)
+        {
+            grid.Children.Clear();
+            Label lab = CreateLabel("Liste zum Bearbeiten wählen", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, string.Empty, 0);
+            ImageButton img = CreateImageButton(0, "hinweis48.png");
+            GetListNames(true);
+        }
+        private void Btn_Delete_Clicked(object sender, EventArgs e)
+        {
+          
+        }
+        private void ListNamesView_Edit_ItemTapped1(object sender, ItemTappedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion Events
+
+        #endregion Edit Lists
         #region Database
         private async void AddItemToDB(string tag,string listName, string itemName)
         {
@@ -908,8 +990,9 @@ namespace Shoppinglist.ViewModels
 
             }
         }
-        private void GetListNames()
+        private void GetListNames(bool edit)
         {
+            
             if (App.DbLists.GetAllItemsAsync().Result.Count > 0)
             {
                 string getName = string.Empty;
@@ -917,13 +1000,22 @@ namespace Shoppinglist.ViewModels
                 {
                    shopListNames.Add(App.DbLists.GetAllItemsAsync().Result[i]);
                 }
-                ListNamesView();
+                ListNamesView(edit);
             }
             else
             {
-                CreateLabel("Noch keine Liste erstellt", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, 3);
+                CreateLabel("Noch keine Liste erstellt", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, string.Empty, 3);
             }
         }
         #endregion Database
+        private static void SelectFromDb()
+        {
+            for (int i = 0; i < App.Db.GetAllItemsAsync().Result.Count; i++)
+            {
+                int id = App.Db.GetAllItemsAsync().Result[i].Id;
+                ShopItems art = App.Db.GetItemAsync(id).Result;
+                Debug.WriteLine(art.ItemName + " " + art.Id);
+            }
+        }
     }
 }
