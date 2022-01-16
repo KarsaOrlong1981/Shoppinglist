@@ -16,7 +16,7 @@ namespace Shoppinglist.Models
         public bool ListCBIsChecked { get; set; }
        
         public string Tag { get; set; }
-       
+        public string Typ { get; set; }
         [Ignore]
         public Color ListCBColor { get; set; }
         [Ignore]
