@@ -10,7 +10,7 @@ namespace Shoppinglist.Models
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-        public string ListName { get; set; }
+        public string ListTag { get; set; }
         public string ItemName { get; set; }
        
         public bool ListCBIsChecked { get; set; }

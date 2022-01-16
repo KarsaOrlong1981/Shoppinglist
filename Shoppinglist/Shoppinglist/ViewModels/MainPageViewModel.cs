@@ -28,7 +28,7 @@ namespace Shoppinglist.ViewModels
         public List<ShopItems> createList, shopListItems, strikedItemList;
         public List<SavedLists> shopListNames;
         string listColor;
-        string listName;
+        string listNameF , listTagF;
         
         #endregion Fields
         #region Property Change 
@@ -337,8 +337,8 @@ namespace Shoppinglist.ViewModels
                     mainPage.BackgroundColor = Color.FromHex("#2A3132");
 
                 }
-                listName = entryNewList.Text;
-                mainPage.Title = listName;
+                listNameF = entryNewList.Text;
+                mainPage.Title = listNameF;
             }
         }
         private void BackToMain()
@@ -415,10 +415,13 @@ namespace Shoppinglist.ViewModels
             foreach (var item in createList)
             {
                
-                AddItemToDB(item.Tag, item.ListName, item.ItemName);
+                AddItemToDB(item.Tag, item.ListTag, item.ItemName);
                
             }
-            AddListToDB(mainPage.Title, listColor);
+            DateTime date = DateTime.Now;
+            string tag = entryNewList.Text + date.Hour + date.Minute + date.Second + date.Millisecond;
+            listTagF = tag;
+            AddListToDB(tag, mainPage.Title, listColor);
             WriteToast.ShowLongToast("Liste wurde gespeichert");
             BackToMain();
         }
@@ -437,7 +440,7 @@ namespace Shoppinglist.ViewModels
                 IsListEmpty();
                 shopitem = new ShopItems();
                 shopitem.ItemName = txt;
-                shopitem.ListName = listName;
+                shopitem.ListTag = listTagF;
                 shopitem.Tag = tag;
                 createList.Add(shopitem);
                 CreateListView(1, shopitem);
@@ -520,7 +523,7 @@ namespace Shoppinglist.ViewModels
         {
             grid.Children.Clear();
             mainPage.Title = "Liste Wählen";
-            GetListNames(false);
+            GetListNames(false, false);
         }
 
         private void SetInfoToDoDone()
@@ -551,7 +554,7 @@ namespace Shoppinglist.ViewModels
             grid.Children.Add(lab_InfoDone);
         }
 
-        private void ListNamesView(bool edit)
+        private void ListNamesView(bool edit, bool delete)
         {
             listNamesView = new ListView
             {
@@ -597,15 +600,22 @@ namespace Shoppinglist.ViewModels
                     };
                 })
             };
-            if (edit)
+            if (!(edit) && !(delete))
             {
-                listNamesView.ItemTapped += ListNamesView_Edit_ItemTapped1;
+                listNamesView.ItemTapped += ListNamesView_ItemTapped;
             }
             else
             {
-                listNamesView.ItemTapped += ListNamesView_ItemTapped; 
+                if (edit)
+                {
+                    listNamesView.ItemTapped += ListNamesView_Edit_ItemTapped1;
+                }
+                if (delete)
+                {
+                    listNamesView.ItemTapped += ListNamesView_Delete_ItemTapped;
+                }
             }
-            
+           
             Grid.SetRow(listNamesView, 1);
             grid.Children.Add(listNamesView);
         }
@@ -764,7 +774,7 @@ namespace Shoppinglist.ViewModels
             grid.BackgroundColor = Color.FromHex(itemData.ListColor);
             mainGrid.BackgroundColor = Color.FromHex(itemData.ListColor);
             foregroundColor = Color.White;
-            LoadListFromDB(itemData.ListName);
+            LoadListFromDB(itemData.Tag);
             ListItemView(itemData.ListName, shopitem);
             SetInfoToDoDone();
             listNamesView.SelectedItem = null;
@@ -782,11 +792,8 @@ namespace Shoppinglist.ViewModels
                 itemData.ListCheckBox = new CheckBox();
                 itemData.ListCheckBox.IsChecked = true;
                 strikedItemList.Add(itemData);
-
-                
                 DeleteFromDB(itemData.Id);
-                
-              
+
             }
             else
             {
@@ -795,11 +802,14 @@ namespace Shoppinglist.ViewModels
             }
             listItemView.SelectedItem = null;
 
-            ListItemView(itemData.ListName, itemData);
+            ListItemView(itemData.ListTag, itemData);
             ListStrikedItems(itemData);
             SetInfoToDoDone();
 
         }
+
+      
+
         //Event liste unten
         private void ListViewStrikedItem_ItemTapped(object sender, ItemTappedEventArgs e)
         {
@@ -827,7 +837,7 @@ namespace Shoppinglist.ViewModels
                     }
                     if (hit == false)
                     {
-                        AddItemToDB(itemData.Tag,itemData.ListName, itemData.ItemName);
+                        AddItemToDB(itemData.Tag,itemData.ListTag, itemData.ItemName);
                     }
                     
                     for (int i = 0; i < App.Db.GetAllItemsAsync().Result.Count; i++)
@@ -843,7 +853,7 @@ namespace Shoppinglist.ViewModels
 
             }
             listItemView.SelectedItem = null;
-            ListItemView(itemData.ListName, itemData);
+            ListItemView(itemData.ListTag, itemData);
             ListStrikedItems(itemData);
             SetInfoToDoDone();
         }
@@ -905,65 +915,72 @@ namespace Shoppinglist.ViewModels
             grid.Children.Clear();
             Label lab = CreateLabel("Liste zum Bearbeiten wählen", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, string.Empty, 0);
             ImageButton img = CreateImageButton(0, "hinweis48.png");
-            GetListNames(true);
+            GetListNames(true, false);
         }
         private void Btn_Delete_Clicked(object sender, EventArgs e)
         {
-          
+            ShowDeleteList();
         }
+
+        private void ShowDeleteList()
+        {
+            grid.Children.Clear();
+            Label lab = CreateLabel("Liste zum Löschen wählen", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, string.Empty, 0);
+            ImageButton img = CreateImageButton(0, "hinweis48.png");
+            shopListNames.Clear(); 
+            GetListNames(false, true);
+        }
+
         private void ListNamesView_Edit_ItemTapped1(object sender, ItemTappedEventArgs e)
         {
-            throw new NotImplementedException();
+          
+        }
+        private void ListNamesView_Delete_ItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            var itemData = (sender as ListView).SelectedItem as SavedLists;
+            DeleteItemsFromList(itemData.Tag);
+            DeleteListFromDB(itemData.Tag);
+            shopListNames.Clear();
+            ShowDeleteList();
         }
         #endregion Events
 
         #endregion Edit Lists
         #region Database
+        private async void DeleteFromDB(int id)
+        {
+            await App.DbLists.DeleteItemAsync(id);
+        }
         private async void AddItemToDB(string tag,string listName, string itemName)
         {
             await App.Db.AddToDBAsync(new Models.ShopItems
             {
                 Tag = tag,
-                ListName = listName,
+                ListTag = listName,
                 ItemName = itemName,
             });
             
         }
-        private async void AddListToDB(string listName, string listColor)
+        private async void AddListToDB(string tag,string listName, string listColor)
         {
             await App.DbLists.AddToDBAsync(new Models.SavedLists
             {
-               
+                Tag=tag,
                 ListName = listName,
                 ListColor = listColor
             });
         }
-        private async void DeleteFromDB(int id)
+       
+        private async void DeleteListFromDB(string listTag)
         {
-            await App.Db.DeleteItemAsync(id);
-        }
-        private async void DeleteListFromDB(string listName)
-        {
-            if (App.Db.GetAllItemsAsync().Result.Count > 0)
-            {
-
-                int id = 0;
-                for (int i = 0; i < App.Db.GetDBCount().Result; i++)
-                {
-                    if (App.Db.GetAllItemsAsync().Result[i].ListName == listName)
-                    {
-                        id = App.Db.GetAllItemsAsync().Result[i].Id;
-                        DeleteFromDB(id);
-                    }
-                }
-
-            }
-            if (App.DbLists.GetAllItemsAsync ().Result.Count > 0)
+           
+            // Die liste selbst löschen
+            if (App.DbLists.GetAllItemsAsync().Result.Count > 0)
             {
                 int id = 0;
                 for (int i = 0; i < App.DbLists.GetDBCount().Result; i++)
                 {
-                    if (App.DbLists.GetAllItemsAsync().Result[i].ListName == listName)
+                    if (App.DbLists.GetAllItemsAsync().Result[i].Tag == listTag)
                     {
                         id = App.DbLists.GetAllItemsAsync().Result[i].Id;
                         await App.DbLists.DeleteItemAsync(id);
@@ -971,8 +988,28 @@ namespace Shoppinglist.ViewModels
                 }
             }
         }
+
+        private async void DeleteItemsFromList(string listTag)
+        {
+            //Alle artikel aus der liste löschen
+            if (App.Db.GetAllItemsAsync().Result.Count > 0)
+            {
+
+                int id = 0;
+                for (int i = 0; i < App.Db.GetDBCount().Result; i++)
+                {
+                    if (App.Db.GetAllItemsAsync().Result[i].ListTag == listTag)
+                    {
+                        id = App.Db.GetAllItemsAsync().Result[i].Id;
+                        await App.Db.DeleteItemAsync(id);
+                    }
+                }
+
+            }
+        }
+
         //erst wenn die liste ausgewählt wurde
-        private void LoadListFromDB(string listName)
+        private void LoadListFromDB(string listTag)
         {
             //hier darf immer nur die liste enthalten sein die aktuell gewählt wurde
             shopListItems.Clear();
@@ -982,7 +1019,7 @@ namespace Shoppinglist.ViewModels
 
                 for (int i = 0; i < App.Db.GetDBCount().Result; i++)
                 {
-                    if (App.Db.GetAllItemsAsync().Result[i].ListName == listName)
+                    if (App.Db.GetAllItemsAsync().Result[i].ListTag == listTag)
                     {
                         shopListItems.Add(App.Db.GetAllItemsAsync().Result[i]);
                     }
@@ -990,21 +1027,21 @@ namespace Shoppinglist.ViewModels
 
             }
         }
-        private void GetListNames(bool edit)
+        private void GetListNames(bool edit, bool delete)
         {
             
             if (App.DbLists.GetAllItemsAsync().Result.Count > 0)
             {
-                string getName = string.Empty;
+               
                 for (int i = 0; i < App.DbLists.GetDBCount().Result; i++)
                 {
                    shopListNames.Add(App.DbLists.GetAllItemsAsync().Result[i]);
                 }
-                ListNamesView(edit);
+                ListNamesView(edit, delete);
             }
             else
             {
-                CreateLabel("Noch keine Liste erstellt", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, string.Empty, 3);
+                CreateLabel("Keine Liste vorhanden", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, string.Empty, 3);
             }
         }
         #endregion Database
