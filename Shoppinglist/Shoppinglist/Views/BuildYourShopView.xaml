@@ -1,12 +1,94 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:Shoppinglist.ViewModels" x:DataType="viewmodels:BuildYourShopViewModel"
              x:Class="Shoppinglist.Views.BuildYourShopView">
     <Grid>
         <ScrollView >
-            <Grid x:Name="grid">
-                
-            </Grid>
+            <StackLayout  x:Name="stack">
+                <Frame>
+                    <StackLayout>
+                        <Image Source="hinweis48.png" HorizontalOptions="CenterAndExpand"  />
+                        <Label Text="Sortiere die Abteilungen vom Eingang des Shops bis zur Kasse."/>
+                    </StackLayout>
+                </Frame>
+               
+                <Label x:Name="lab1" Text="{Binding Lab1_txt}"  TextColor="Black" BackgroundColor="White" HorizontalTextAlignment="Center" FontSize="25"  >
+                    <Label.GestureRecognizers >
+                        <DragGestureRecognizer CanDrag="True" DragStarting="DragGestureRecognizer_DragStarting"  />
+                        <DropGestureRecognizer AllowDrop="True" Drop="DropGestureRecognizer_Drop"  />
+                    </Label.GestureRecognizers>
+                </Label>
+
+                <Label x:Name="lab2" Text="{Binding Lab2_txt}" BackgroundColor="White" TextColor="Black" HorizontalTextAlignment="Center" FontSize="25">
+                    <Label.GestureRecognizers>
+                        <DragGestureRecognizer CanDrag="True" DragStarting="DragGestureRecognizer_DragStarting"   />
+                        <DropGestureRecognizer AllowDrop="True" Drop="DropGestureRecognizer_Drop"   />
+                    </Label.GestureRecognizers>
+                </Label>
+
+
+                <Label x:Name="lab3" Text="{Binding Lab3_txt}" BackgroundColor="White" TextColor="Black" HorizontalTextAlignment="Center" FontSize="25">
+                    <Label.GestureRecognizers>
+                        <DragGestureRecognizer CanDrag="True" DragStarting="DragGestureRecognizer_DragStarting"  />
+                        <DropGestureRecognizer AllowDrop="True" Drop="DropGestureRecognizer_Drop"  />
+                    </Label.GestureRecognizers>
+                </Label>
+
+
+                <Label x:Name="lab4" Text="{Binding Lab4_txt}" BackgroundColor="White" TextColor="Black" HorizontalTextAlignment="Center" FontSize="25">
+                    <Label.GestureRecognizers>
+                        <DragGestureRecognizer CanDrag="True" DragStarting="DragGestureRecognizer_DragStarting"  />
+                        <DropGestureRecognizer AllowDrop="True" Drop="DropGestureRecognizer_Drop"  />
+                    </Label.GestureRecognizers>
+                </Label>
+
+
+                <Label x:Name="lab5" Text="{Binding Lab5_txt}" BackgroundColor="White" TextColor="Black" HorizontalTextAlignment="Center" FontSize="25">
+                    <Label.GestureRecognizers>
+                        <DragGestureRecognizer CanDrag="True" DragStarting="DragGestureRecognizer_DragStarting"  />
+                        <DropGestureRecognizer AllowDrop="True" Drop="DropGestureRecognizer_Drop"  />
+                    </Label.GestureRecognizers>
+                </Label>
+
+
+                <Label x:Name="lab6" Text="{Binding Lab6_txt}" BackgroundColor="White" TextColor="Black" HorizontalTextAlignment="Center" FontSize="25">
+                    <Label.GestureRecognizers>
+                        <DragGestureRecognizer CanDrag="True" DragStarting="DragGestureRecognizer_DragStarting"  />
+                        <DropGestureRecognizer AllowDrop="True" Drop="DropGestureRecognizer_Drop"  />
+                    </Label.GestureRecognizers>
+                </Label>
+
+
+                <Label x:Name="lab7" Text="{Binding Lab7_txt}" BackgroundColor="White" TextColor="Black" HorizontalTextAlignment="Center" FontSize="25">
+                    <Label.GestureRecognizers>
+                        <DragGestureRecognizer CanDrag="True" DragStarting="DragGestureRecognizer_DragStarting"  />
+                        <DropGestureRecognizer AllowDrop="True" Drop="DropGestureRecognizer_Drop"  />
+                    </Label.GestureRecognizers>
+                </Label>
+
+
+                <Label x:Name="lab8" Text="{Binding Lab8_txt}" BackgroundColor="White" TextColor="Black" HorizontalTextAlignment="Center" FontSize="25">
+                    <Label.GestureRecognizers>
+                        <DragGestureRecognizer CanDrag="True" DragStarting="DragGestureRecognizer_DragStarting"  />
+                        <DropGestureRecognizer AllowDrop="True" Drop="DropGestureRecognizer_Drop"  />
+                    </Label.GestureRecognizers>
+                </Label>
+
+
+                <Label x:Name="lab9" Text="{Binding Lab9_txt}" BackgroundColor="White" TextColor="Black" HorizontalTextAlignment="Center" FontSize="25">
+                    <Label.GestureRecognizers>
+                        <DragGestureRecognizer CanDrag="True" DragStarting="DragGestureRecognizer_DragStarting"  />
+                        <DropGestureRecognizer AllowDrop="True" Drop="DropGestureRecognizer_Drop"  />
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label x:Name="lab10" Text="{Binding Lab10_txt}" BackgroundColor="White" TextColor="Black" HorizontalTextAlignment="Center" FontSize="25">
+                    <Label.GestureRecognizers>
+                        <DragGestureRecognizer CanDrag="True" DragStarting="DragGestureRecognizer_DragStarting"  />
+                        <DropGestureRecognizer AllowDrop="True" Drop="DropGestureRecognizer_Drop"  />
+                    </Label.GestureRecognizers>
+                </Label>
+
+            </StackLayout>
         </ScrollView>
     </Grid>
 </ContentPage>

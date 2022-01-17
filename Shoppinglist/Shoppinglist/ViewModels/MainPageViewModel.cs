@@ -1,5 +1,6 @@
 ﻿using Shoppinglist.Model;
 using Shoppinglist.Models;
+using Shoppinglist.Views;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -42,8 +43,9 @@ namespace Shoppinglist.ViewModels
             get => createList;
             set => SetProperty(ref createList, value);
         }
-        #endregion Property Change
         public INavigation Navigation { get; set; }
+        #endregion Property Change
+
         public MainPageViewModel(INavigation navigation, Grid grid, Grid mainGrid, MainPage mainPage)
         {
             this.Navigation = navigation; 
@@ -692,6 +694,11 @@ namespace Shoppinglist.ViewModels
             ImageButton img = CreateImageButton(0, "hinweis48.png");
             GetListNames(false, true);
         }
+        private void CallBuildYourShop()
+        {
+            BuildYourShopView bysView = new BuildYourShopView();
+            Navigation.PushAsync(bysView);
+        }
         #endregion Methods 
 
 
@@ -903,7 +910,8 @@ namespace Shoppinglist.ViewModels
             string options = (sender as Button).Text;
             switch (options)
             {
-                case "Neue Liste erstellen": NewShoppingList(); break;
+                //case "Neue Liste erstellen": NewShoppingList(); break;
+                case "Neue Liste erstellen": CallBuildYourShop(); break;
                 case "Liste Wählen": LoadShoppingList(); CreateToolBarItem(); break;
                 case "Listen Verwalten": Editlist(); CreateToolBarItem(); break;
             }
