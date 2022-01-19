@@ -195,7 +195,7 @@ namespace Shoppinglist.ViewModels
             
             return checkBox;
         }
-        private Entry CreateEntry(string txt, LayoutOptions vertOptions, LayoutOptions horOptions, Color background, Color placeholder, Color text)
+        public Entry CreateEntry(string txt, LayoutOptions vertOptions, LayoutOptions horOptions, Color background, Color placeholder, Color text)
         {
             Entry entry = new Entry
             {
@@ -203,7 +203,7 @@ namespace Shoppinglist.ViewModels
                 PlaceholderColor = placeholder,
                 BackgroundColor = background,
                 TextColor = text,
-                MaxLength = 25,
+                MaxLength = 40,
                 ClearButtonVisibility = ClearButtonVisibility.WhileEditing,
                 FontSize = 16.0,
                 WidthRequest = 200,
@@ -371,12 +371,15 @@ namespace Shoppinglist.ViewModels
             Frame frame1 = CreateFrame(Color.FromHex("#86AC41"), LayoutOptions.CenterAndExpand, LayoutOptions.FillAndExpand, 1);
             Frame frame2 = CreateFrame(Color.FromHex("#86AC41"), LayoutOptions.CenterAndExpand, LayoutOptions.FillAndExpand, 2);
             Frame frame3 = CreateFrame(Color.FromHex("#86AC41"), LayoutOptions.CenterAndExpand, LayoutOptions.FillAndExpand, 3);
+            Frame frame4 = CreateFrame(Color.FromHex("#86AC41"), LayoutOptions.CenterAndExpand, LayoutOptions.FillAndExpand, 4);
             Button btn1 = CreateMainmenueBTN("Neue Liste erstellen", "neueListe48.png");
             Button btn2 = CreateMainmenueBTN("Liste Wählen", "einkauf48.png");
             Button btn3 = CreateMainmenueBTN("Listen Verwalten", "edit48.png");
+            Button btn4 = CreateMainmenueBTN("Build your Shop", "einkauf48.png");
             frame1.Content = btn1;
             frame2.Content = btn2;
             frame3.Content = btn3;
+            frame4.Content = btn4;
 
             //Liste bearbeiten fehlt
             //Liste Löschen fehlt
@@ -694,10 +697,11 @@ namespace Shoppinglist.ViewModels
             ImageButton img = CreateImageButton(0, "hinweis48.png");
             GetListNames(false, true);
         }
-        private void CallBuildYourShop()
+        private async void CallBuildYourShop()
         {
-            BuildYourShopView bysView = new BuildYourShopView();
-            Navigation.PushAsync(bysView);
+            BuildYourShopView bysView = new BuildYourShopView(this);
+            await Navigation.PushAsync(bysView);
+            Navigation.RemovePage(mainPage);
         }
         #endregion Methods 
 
@@ -910,10 +914,10 @@ namespace Shoppinglist.ViewModels
             string options = (sender as Button).Text;
             switch (options)
             {
-                //case "Neue Liste erstellen": NewShoppingList(); break;
-                case "Neue Liste erstellen": CallBuildYourShop(); break;
-                case "Liste Wählen": LoadShoppingList(); CreateToolBarItem(); break;
+                case "Neue Liste erstellen": NewShoppingList(); break;
+                case "Liste Wählen": LoadShoppingList(); CreateToolBarItem(); break;//zuerst fragen welcher Shop genutzt werden soll,dann die listen anzeigen
                 case "Listen Verwalten": Editlist(); CreateToolBarItem(); break;
+                case "Build your Shop": CallBuildYourShop(); break;
             }
         }
         private void Btn_Edit_Clicked1(object sender, EventArgs e)

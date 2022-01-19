@@ -14,11 +14,11 @@ namespace Shoppinglist.Views
     public partial class BuildYourShopView : ContentPage
     {
         Label sendingLabel;
-        public BuildYourShopView()
+        public BuildYourShopView(MainPageViewModel mainPageViewModel)
         {
             InitializeComponent();
             sendingLabel = new Label();
-            BindingContext = new BuildYourShopViewModel(Navigation, stack, this);
+            BindingContext = new BuildYourShopViewModel(Navigation, stack, this, mainPageViewModel);
            
         }
 

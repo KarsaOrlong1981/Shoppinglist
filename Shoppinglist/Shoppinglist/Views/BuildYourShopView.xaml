@@ -2,13 +2,13 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" xmlns:viewmodels="clr-namespace:Shoppinglist.ViewModels" x:DataType="viewmodels:BuildYourShopViewModel"
              x:Class="Shoppinglist.Views.BuildYourShopView">
-    <Grid>
+    <Grid x:Name="grid">
         <ScrollView >
             <StackLayout  x:Name="stack">
                 <Frame>
                     <StackLayout>
                         <Image Source="hinweis48.png" HorizontalOptions="CenterAndExpand"  />
-                        <Label Text="Sortiere die Abteilungen vom Eingang des Shops bis zur Kasse."/>
+                        <Label Text="Sortiere die Abteilungen vom Eingang des Shops bis zur Kasse." FontSize="16" HorizontalTextAlignment="Center" />
                     </StackLayout>
                 </Frame>
                
@@ -87,8 +87,10 @@
                         <DropGestureRecognizer AllowDrop="True" Drop="DropGestureRecognizer_Drop"  />
                     </Label.GestureRecognizers>
                 </Label>
-
+                <Button VerticalOptions="EndAndExpand" Text="Shop hinzufügen" Command="{Binding ButtonAddShop}"/>
             </StackLayout>
+            
         </ScrollView>
-    </Grid>
+      
+    </Grid> 
 </ContentPage>

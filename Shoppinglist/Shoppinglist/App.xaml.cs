@@ -11,6 +11,7 @@ namespace Shoppinglist
         public static NavigationPage NavPage { get; set; }
         private static Database db;
         private static DatabaseLists dbLists;
+        private static DatabaseBuildYourShop dbBYS;
         public static Database Db
         {
             get
@@ -33,7 +34,17 @@ namespace Shoppinglist
                 return dbLists;
             }
         }
-    
+        public static DatabaseBuildYourShop DbBYS
+        {
+            get
+            {
+                if (dbBYS == null)
+                {
+                    dbBYS = new DatabaseBuildYourShop(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Shops.db1"));
+                }
+                return dbBYS;
+            }
+        }
         public App()
         {   //
             //

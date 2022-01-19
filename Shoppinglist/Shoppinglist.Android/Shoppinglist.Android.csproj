@@ -119,6 +119,12 @@
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\this24.png" />
   </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\DrogerieItems.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\MilchprodukteItems.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
