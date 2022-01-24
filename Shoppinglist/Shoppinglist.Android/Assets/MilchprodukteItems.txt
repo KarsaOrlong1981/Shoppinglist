@@ -28,8 +28,8 @@ Puddings
 Milchschnitte
 Kinder Pinguine
 Pinguine
-Baby bell
-Babybell
+Baby bel
+Babybel
 Käse
 Gouda
 Erdammer
@@ -60,7 +60,3 @@ Büffelkäse
 Schmelzkäsezubereitung
 Cremefine 15%
 Cremefine
-
-
-
-

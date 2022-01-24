@@ -1,45 +1,73 @@
-﻿using System;
+﻿using Android.Content.Res;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Shoppinglist
 {
-    public class ItemTyp
+    public static class ItemTyp
     {
+        private static List<string> drogerie_List = new List<string>();
+        private static List<string> kaffee_Tee_Brot_List = new List<string>();
+        private static List<string> snacks_List = new List<string>();
+        private static List<string> teig_Trockenware_List = new List<string>();
+        private static List<string> tiernahrung_List = new List<string>();
+        private static List<string> getraenke_list = new List<string>();
+        private static List<string> tiefkuehl_list = new List<string>();
+        private static List<string> fleisch_Wurst_Fisch_List = new List<string>();
+        private static List<string> milchprodukte_List = new List<string>();
+        private static List<string> obst_gemuese_List = new List<string>();
+        private static List<string> sonstiges_list = new List<string>();
 
-        public ItemTyp()
+        private static void ReadAsset(string filename, List<string> list)
         {
-
-        }
-        /*  private void buttonLos_Click(object sender, RoutedEventArgs e)
-        {
-            this.frame.Visibility = Visibility.Hidden;
-            List<string> searchResult = new List<string>();
-            string input = txt_search .Text;
-            input = input.ToLower ();
-            foreach (var item in pokemonNames)
+            AssetManager assets = Android.App.Application.Context.Assets;
+            using (StreamReader reader = new StreamReader(assets.Open(filename)))
             {
-                bool containsResult = item.Contains(input);
-                if (containsResult)
+                while (!(reader.EndOfStream))
                 {
-                   searchResult.Add(item); 
+                    string line = reader.ReadLine();
+                    
+                    list.Add(line.ToUpper());
                 }
             }
-            ListView listView = new ListView()
+        }
+        private static void GetDrogerieItems()
+        {
+            ReadAsset("DrogerieItems.txt", drogerie_List);
+            
+        }
+        private static void GetMilchprodukteItems()
+        {
+            ReadAsset("MilchprodukteItems.txt", milchprodukte_List);
+        }
+        public static string GetCategorieTyp(string itemName)
+        {
+            string typ = "Sonstiges";
+            itemName = itemName.ToUpper(); 
+            GetDrogerieItems();
+            GetMilchprodukteItems();
+            foreach (var item in drogerie_List)
             {
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Top,
-                Width = 200,
-                Margin = new Thickness(0,40,0,0),
-            };
-            listView.SelectionChanged += ListView_SelectionChanged;
-            foreach (var item in searchResult)
-            {
-                listView.Items.Add(item);
+                if (itemName.Contains(item))
+                {
+                    typ = "Drogerie";
+                    break;
+                }
             }
-            this.listView = listView;
-            this.grid.Children.Add(listView);  
-            Grid.SetRow(listView, 0);
-        }*/
+
+            foreach (var item in milchprodukte_List)
+            {
+                if (itemName.Contains(item))
+                {
+                    typ = "Milchprodukte";
+                    break;
+                }
+            }
+           
+
+            return typ;
+        }
     }
 }

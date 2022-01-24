@@ -84,17 +84,18 @@ namespace Shoppinglist.ViewModels
             this.stack = stack;
             this.bysView = bysView;
             this.mainPage = mainPage;
-            Lab1_txt = "Drogerie";
-            Lab2_txt = "Milchprodukte";
-            Lab3_txt = "Obst & Gemüse";
-            lab4_txt = "Teig-/Trockenware";
+            lab1_txt = "Tee/Kaffee/Brot";
+            lab2_txt = "Snacks";
+            lab3_txt = "Teig-/Trockenware";
+            lab4_txt = "Tiernahrung";
             lab5_txt = "Getränke";
-            lab6_txt = "Tee/Kaffee/Brot";
-            lab7_txt = "Snacks";
-            lab8_txt = "Tiefkühlwaren";
-            lab9_txt = "Fleisch/Wurst/Fisch";
-            lab10_txt = "Tiernahrung";
+            lab6_txt = "Drogerie";
+            lab7_txt = "Tiefkühlwaren";
+            lab8_txt = "Fleisch/Wurst/Fisch";
+            lab9_txt = "Milchprodukte";
+            lab10_txt = "Obst & Gemüse";
             lab11_txt = "Sonstiges";
+           
             ButtonAddShop = new Command(SaveNewShop);
            
         }
