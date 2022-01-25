@@ -86,7 +86,7 @@ namespace Shoppinglist.ViewModels
             this.mainPage = mainPage;
             lab1_txt = "Tee/Kaffee/Brot";
             lab2_txt = "Snacks";
-            lab3_txt = "Teig-/Trockenware";
+            lab3_txt = "Teig-/Trockenwaren";
             lab4_txt = "Tiernahrung";
             lab5_txt = "Getränke";
             lab6_txt = "Drogerie";

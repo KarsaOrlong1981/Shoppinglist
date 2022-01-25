@@ -27,6 +27,7 @@ namespace Shoppinglist.ViewModels
         TextDecorations decorations;
         ShopItems shopitem;
         SavedLists savedLists;
+        ItemTyp itemTyp;
         public List<ShopItems> createList, shopListItems, strikedItemList;
         public List<SavedLists> shopListNames;
         public List<MyShop> myShopNames;
@@ -60,6 +61,7 @@ namespace Shoppinglist.ViewModels
             backgroundColor = Color.White;
             foregroundColor = Color.Black;
             grid.BackgroundColor = backgroundColor;
+            itemTyp = new ItemTyp();
             shopitem = new ShopItems();
             createList = new List<ShopItems>();
             shopListItems = new List<ShopItems>();
@@ -351,6 +353,7 @@ namespace Shoppinglist.ViewModels
         }
         private void BackToMain()
         {
+            Categories.ClearAllLists();
             strikedItemList.Clear();    
             shopListItems.Clear();
             shopListNames.Clear();
@@ -423,7 +426,7 @@ namespace Shoppinglist.ViewModels
             GetListNames(false, false);
         }
 
-        private void SetInfoToDoDone()
+        public void SetInfoToDoDone()
         {
             Label lab_InfoToDo = new Label
             {
@@ -699,7 +702,7 @@ namespace Shoppinglist.ViewModels
             foreach (var item in createList)
             {
                
-                AddItemToDB(item.Tag, listTagF, item.ItemName);
+                AddItemToDB(item.Tag, listTagF, item.ItemName, item.Typ);
                
             }
             
@@ -739,7 +742,7 @@ namespace Shoppinglist.ViewModels
         {
             string typ = string.Empty;
             //Alle Assets auslesen um den Typ zu definieren, über die Klasse ItemTyp
-            typ = ItemTyp.GetCategorieTyp(itemName);
+            typ = itemTyp.GetCategorieTyp(itemName);
             return typ;
         }
 
@@ -765,6 +768,7 @@ namespace Shoppinglist.ViewModels
         }
         private void ListNamesView_ItemTapped(object sender, ItemTappedEventArgs e)
         {
+            grid.Children.Clear();
             var itemData = (sender as ListView).SelectedItem as SavedLists;
             mainPage.BackgroundColor = Color.FromHex(itemData.ListColor);
             grid.BackgroundColor = Color.FromHex(itemData.ListColor);
@@ -779,86 +783,13 @@ namespace Shoppinglist.ViewModels
         
       
 
-        public void ItemTappedDone(object sender, ListView listItemView, MyShop myShop, SavedLists savedLists)
-        {
-            var itemData = (sender as ListView).SelectedItem as ShopItems;
-
-            if (itemData.ListCBIsChecked == false)
-            {
-                itemData.ListCBIsChecked = true;
-                shopListItems.Remove(itemData);
-                itemData.ListCheckBox = new CheckBox();
-                itemData.ListCheckBox.IsChecked = true;
-                strikedItemList.Add(itemData);
-                DeleteFromDB(itemData.Id);
-
-            }
-            else
-            {
-                itemData.ListCBIsChecked = false;
-                //AddItemToDB(itemData.ListName, itemData.ItemName);
-            }
-            listItemView.SelectedItem = null;
-
-           // ListItemView(itemData.ListTag, itemData);
-            Categories categories = new Categories(grid, myShop, mainPage, shopListItems,strikedItemList, savedLists, this, itemData);
-            categories.SetCategories();
-           
-            SetInfoToDoDone();
-        }
-
+       
 
 
         //Event liste unten
         
 
-        public void StrikedItemsToDO(object sender, ListView listItemView, MyShop myShop, SavedLists savedLists)
-        {
-            var itemData = (sender as ListView).SelectedItem as ShopItems;
-            if (itemData.ListCBIsChecked == false)
-            {
-                itemData.ListCBIsChecked = true;
-
-            }
-            else
-            {
-                itemData.ListCBIsChecked = false;
-                strikedItemList.Remove(itemData);
-                if (!(shopListItems.Contains(itemData)))
-                {
-                    bool hit = false;
-                    itemData.ListCheckBox = new CheckBox();
-                    itemData.ListCheckBox.IsChecked = false;
-                    for (int i = 0; i < App.Db.GetAllItemsAsync().Result.Count; i++)
-                    {
-                        if (App.Db.GetAllItemsAsync().Result[i].Tag == itemData.Tag)
-                        {
-                            hit = true;
-                        }
-                    }
-                    if (hit == false)
-                    {
-                        AddItemToDB(itemData.Tag, itemData.ListTag, itemData.ItemName);
-                    }
-
-                    for (int i = 0; i < App.Db.GetAllItemsAsync().Result.Count; i++)
-                    { // ein tag hinzufügen
-                        if (App.Db.GetAllItemsAsync().Result[i].Tag == itemData.Tag)
-                        {
-                            ShopItems si = App.Db.GetAllItemsAsync().Result[i];
-                            if (!(shopListItems.Contains(si)))
-                                shopListItems.Add(si);
-                        }
-                    }
-                }
-
-            }
-            listItemView.SelectedItem = null;
-            Categories categories = new Categories(grid, myShop, mainPage, shopListItems, strikedItemList, savedLists, this, itemData);
-            categories.SetCategories();
-           
-            SetInfoToDoDone();
-        }
+       
 
         private void Btn_Clicked(object sender, EventArgs e)
         {
@@ -899,18 +830,15 @@ namespace Shoppinglist.ViewModels
 
 
         #region Database
-        private async void DeleteFromDB(int id)
-        {
-            await App.DbLists.DeleteItemAsync(id);
-        }
-        private async void AddItemToDB(string tag,string listName, string itemName)
+      
+        public async void AddItemToDB(string tag,string listName, string itemName, string typ)
         {
             await App.Db.AddToDBAsync(new Models.ShopItems
             {
                 Tag = tag,
                 ListTag = listName,
                 ItemName = itemName,
-               // Typ = typ
+                Typ = typ
             });
             
         }
@@ -965,25 +893,7 @@ namespace Shoppinglist.ViewModels
         }
 
         //erst wenn die liste ausgewählt wurde
-        private void LoadListFromDB(string listTag)
-        {
-            //hier darf immer nur die liste enthalten sein die aktuell gewählt wurde
-            shopListItems.Clear();
-            var db = App.Db;
-            if (db.GetAllItemsAsync().Result.Count > 0)
-            {
-
-
-                for (int i = 0; i < db.GetDBCount().Result; i++)
-                {
-                    if (db.GetAllItemsAsync().Result[i].ListTag == listTag)
-                    {
-                        shopListItems.Add(db.GetAllItemsAsync().Result[i]);
-                    }
-                }
-
-            }
-        }
+       
         private void GetShopNames()
         {
             var dbBYS = App.DbBYS;
@@ -993,7 +903,7 @@ namespace Shoppinglist.ViewModels
                 Tag = "Standard0123456789",
                 Lab1 = "Tee/Kaffee/Brot",
                 Lab2 = "Snacks",
-                Lab3 = "Teig-/Trockenware",
+                Lab3 = "Teig-/Trockenwaren",
                 Lab4 = "Tiernahrung",
                 Lab5 = "Getränke",
                 Lab6 = "Drogerie",
@@ -1002,18 +912,37 @@ namespace Shoppinglist.ViewModels
                 Lab9 = "Milchprodukte",
                 Lab10 = "Obst & Gemüse",
                 Lab11 = "Sonstiges"
-        };
+            };
+            MyShop myShopNone = new MyShop
+            {
+                Name = "Keinen",
+                Tag = "Standard0123456789",
+                Lab1 = "",
+                Lab2 = "",
+                Lab3 = "",
+                Lab4 = "",
+                Lab5 = "",
+                Lab6 = "",
+                Lab7 = "",
+                Lab8 = "",
+                Lab9 = "",
+                Lab10 = "",
+                Lab11 = ""
+            };
+            myShopNames.Add(myShopNone);
+            myShopNames.Add(myShopDefault);
+
             if (dbBYS.GetAllItemsAsync().Result.Count > 0)
             {
-                myShopNames.Add(myShopDefault);
+               
 
                 for (int i = 0; i < dbBYS.GetDBCount().Result; i++)
                 {
                     myShopNames.Add(dbBYS.GetAllItemsAsync().Result[i]);
                 }
-                MyShopList();
+               
             }
-           
+            MyShopList();
         }
 
         private void GetListNames(bool edit, bool delete)
@@ -1044,14 +973,14 @@ namespace Shoppinglist.ViewModels
             ShowList(savedLists, itemData);
             listMyShops.SelectedItem = null;
         }
-        private void ShowList(SavedLists itemData, MyShop myShop)
+        private async void ShowList(SavedLists itemData, MyShop myShop)
         {
             //mit myShop wird die gewünschte reihenfolge der kategorien festgelegt
-            LoadListFromDB(itemData.Tag);
+           
             //ListItemView muss demnach geändert werden
             //ListItemView(itemData.ListName, shopitem);
-            Categories categories = new Categories(grid, myShop, mainPage, shopListItems, strikedItemList,itemData, this, shopitem);
-            categories.SetCategories();
+            Categories categories = new Categories(grid, myShop, mainPage, itemData, this);
+            await categories.SetCategories(shopitem);
             SetInfoToDoDone();
         }
         #endregion Next Step
