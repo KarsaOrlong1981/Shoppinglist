@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Shoppinglist
 {
-    public class ItemTyp
+    public static class ItemAssets
     {
         private static List<string> drogerie_List = new List<string>();
         private static List<string> kaffee_Tee_Brot_List = new List<string>();
@@ -18,10 +18,15 @@ namespace Shoppinglist
         private static List<string> fleisch_Wurst_Fisch_List = new List<string>();
         private static List<string> milchprodukte_List = new List<string>();
         private static List<string> obst_gemuese_List = new List<string>();
+        private static List<string> suessigkeiten_List = new List<string>();
+        private static List <string> allItems_List = new List<string>();
+        private static int readCount = 0;
        
-        public ItemTyp()
+        
+        public static List<string> GetAllItems(List<string> allItems)
         {
-            ReadAllAssets();   
+            ReadAsset("AllItems.txt", allItems);
+            return allItems;
         }
         private static void ReadAsset(string filename, List<string> list)
         {
@@ -36,6 +41,11 @@ namespace Shoppinglist
                     list.Add(line.ToUpper());
                 }
             }
+        }
+        private static void GetSuessigkeitenItems()
+        {
+           ReadAsset("Suessigkeiten.txt", suessigkeiten_List);
+
         }
         private static void GetDrogerieItems()
         {
@@ -78,11 +88,20 @@ namespace Shoppinglist
         {
             ReadAsset("Obst_Gemuese.txt", obst_gemuese_List);
         }
-        public string GetCategorieTyp(string itemName)
+        public static string GetCategorieTyp(string itemName)
         {
+            ReadAllAssets();
             string typ = "Sonstiges";
             itemName = itemName.ToUpper();
-           
+
+            foreach (var item in suessigkeiten_List)
+            {
+                if (itemName.Contains(item))
+                {
+                    typ = "Süßigkeiten";
+                    break;
+                }
+            }
             foreach (var item in drogerie_List)
             {
                 if (itemName.Contains(item))
@@ -170,16 +189,27 @@ namespace Shoppinglist
        
         private static void ReadAllAssets()
         {
-            GetDrogerieItems();
-            GetMilchprodukteItems();
-            GetFleischItems();
-            GetGetraenkeItems();
-            GetKaffee_BrotItems();
-            GetObstItems();
-            GetSnacksItems();
-            GetTeig_TrockenItems();
-            GetTiefkuehlItems();
-            GetTiernahrungItems();
+            //Darf nur einmal zur laufzeit der Anwendung ausgeführt werden, performanter 
+            if (readCount == 0)
+            {
+                GetDrogerieItems();
+                GetMilchprodukteItems();
+                GetFleischItems();
+                GetGetraenkeItems();
+                GetKaffee_BrotItems();
+                GetObstItems();
+                GetSnacksItems();
+                GetTeig_TrockenItems();
+                GetTiefkuehlItems();
+                GetTiernahrungItems();
+                GetSuessigkeitenItems();
+            }
+            readCount++;
+            //readcount soll dauerhaft auf 1 bleiben um nicht unnötig weiter hoch zu zählen
+            if (readCount == 2)
+            {
+                readCount = 1;
+            }
         }
     }
 }

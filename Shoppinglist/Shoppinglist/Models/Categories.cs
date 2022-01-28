@@ -12,11 +12,12 @@ namespace Shoppinglist.Models
         private Grid grid, categorieGrid;
         private MyShop myShop;
         private MainPage mainPage;
-        private static List<ShopItems> strikedItemList, defaultList, drogerie_List, kaffee_List, snacks_List, teig_Trocken_List, tiernahrung_List, getraenke_List, tiefkuehl_List, fleisch_List, milch_list, obst_List, sonstiges_List;
+        private List<ShopItems> strikedItemList, defaultList, suessikeiten_List, drogerie_List, kaffee_List, snacks_List, teig_Trocken_List, tiernahrung_List, getraenke_List, tiefkuehl_List, fleisch_List, milch_list, obst_List, sonstiges_List;
         private SavedLists savedLists;
         private MainPageViewModel mainPageViewModel;
         private ListView listItemView, listViewStrikedItem;
-       
+        private List<Label> categorieLabels;
+        private List<Grid> categorieGrids;
         
         public Categories(Grid grid, MyShop myShop, MainPage mainPage, SavedLists savedLists, MainPageViewModel mainPageViewModel)
         {
@@ -27,6 +28,7 @@ namespace Shoppinglist.Models
             strikedItemList = new List<ShopItems>();
             drogerie_List = new List<ShopItems>();
             kaffee_List = new List<ShopItems>();
+            suessikeiten_List = new List<ShopItems>();
             snacks_List = new List<ShopItems>();
             teig_Trocken_List = new List<ShopItems>();
             tiernahrung_List = new List<ShopItems>();
@@ -36,27 +38,17 @@ namespace Shoppinglist.Models
             milch_list = new List<ShopItems>();
             obst_List = new List<ShopItems>();
             sonstiges_List = new List<ShopItems>();
+            categorieLabels = new List<Label>();
+            categorieLabels.Clear();
+            categorieGrids = new List<Grid>();
+            categorieGrids.Clear();
             this.savedLists = savedLists;
             this.mainPageViewModel = mainPageViewModel;
             
             grid.Children.Clear();
         }
-        public static void ClearAllLists()
-        {
-            defaultList.Clear();
-            strikedItemList.Clear();
-            drogerie_List.Clear();
-            kaffee_List.Clear();
-            snacks_List.Clear(); 
-            teig_Trocken_List.Clear();
-            tiernahrung_List.Clear();
-            getraenke_List.Clear();
-            tiefkuehl_List.Clear();
-            fleisch_List.Clear();
-            milch_list.Clear();
-            obst_List.Clear();
-            sonstiges_List.Clear();
-        }
+        #region Methods
+      
         private void NewCategorieGrid()
         {
             ScrollView scrollView = new ScrollView
@@ -80,6 +72,7 @@ namespace Shoppinglist.Models
                         new RowDefinition { Height = new GridLength(0, GridUnitType.Auto) },
                          new RowDefinition { Height = new GridLength(0, GridUnitType.Auto) },
                           new RowDefinition { Height = new GridLength(0, GridUnitType.Auto) },
+                           new RowDefinition { Height = new GridLength(0, GridUnitType.Auto) },
 
             },
             };
@@ -92,8 +85,7 @@ namespace Shoppinglist.Models
         {
             grid.Children.Clear();
             NewCategorieGrid();
-            await Task.Run(() =>
-            AddItemsToCategorie());
+            await Task.Run(() => AddItemsToCategorie());
             if (myShop.Name == "Keinen")
             {
                 ListItemView(shopItems, savedLists.ListName, "", 0);
@@ -111,6 +103,7 @@ namespace Shoppinglist.Models
                 ListItemView(shopItems, savedLists.ListName, myShop.Lab9, 8);
                 ListItemView(shopItems, savedLists.ListName, myShop.Lab10, 9);
                 ListItemView(shopItems, savedLists.ListName, myShop.Lab11, 10);
+                ListItemView(shopItems, savedLists.ListName, myShop.Lab12, 11);
             }
             
             ListStrikedItems(shopItems);
@@ -118,7 +111,7 @@ namespace Shoppinglist.Models
         private void AddItemsToCategorie()
         {
             //die items den listen zuweisen
-            
+            LoadListFromDB("Süßigkeiten", savedLists.Tag);
             LoadListFromDB("Drogerie", savedLists.Tag);
             LoadListFromDB("Milchprodukte", savedLists.Tag);
             LoadListFromDB("Tee/Kaffee/Brot", savedLists.Tag);
@@ -145,14 +138,16 @@ namespace Shoppinglist.Models
                     HorizontalOptions = LayoutOptions.Center,
                     VerticalOptions = LayoutOptions.Center,
                     RowDefinitions =
-            {
-                new RowDefinition { Height = new GridLength(0, GridUnitType.Auto) },
-                 new RowDefinition { Height = new GridLength(0, GridUnitType.Auto) },
-            },
+                    {
+                        new RowDefinition { Height = new GridLength(0, GridUnitType.Auto) },
+                          new RowDefinition { Height = new GridLength(0, GridUnitType.Auto) },
+                    },
                 };
+                categorieGrids.Add(gridStricked);
                 Label lab_Categorie = new Label
                 {
                     Text = categorie,
+                    
                     VerticalOptions = LayoutOptions.StartAndExpand,
                     HorizontalOptions = LayoutOptions.FillAndExpand,
                     HorizontalTextAlignment = TextAlignment.Center,
@@ -160,7 +155,7 @@ namespace Shoppinglist.Models
                     FontSize = 25,
                     TextColor = Color.Magenta
                 };
-
+                categorieLabels.Add(lab_Categorie);
                 listItemView = new ListView
                 {
                     ItemsSource = GetItemSource(categorie),
@@ -240,18 +235,22 @@ namespace Shoppinglist.Models
             int count = listCount.Count;   
             if (listCount == defaultList)
             {
-                heigth = 300;
+                heigth = 400;
             }
             else
             if (count > 0)
             {
-                if (count <= 10)
+                if (count <= 4)
                 {
                     heigth = 150;
                 }
+                if (count > 4 && count <= 10)
+                {
+                    heigth = 250;
+                }
                 if (count > 10)
                 {
-                    heigth = 200;
+                    heigth = 350;
                 }
             }
             else
@@ -277,6 +276,7 @@ namespace Shoppinglist.Models
                 case "Fleisch/Wurst/Fisch": return fleisch_List; 
                 case "Tiefkühlwaren":return tiefkuehl_List; 
                 case "Obst & Gemüse": return obst_List;
+                case "Süßigkeiten": return suessikeiten_List;
                 case "": return defaultList;
                 default: return sonstiges_List; 
             }
@@ -296,7 +296,7 @@ namespace Shoppinglist.Models
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Always,
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center,
-                HeightRequest = 300.0,
+                HeightRequest = 200.0,
                 ItemTemplate = new DataTemplate(() =>
                 {
                     Label lab = new Label();
@@ -314,16 +314,9 @@ namespace Shoppinglist.Models
                     si.ListCheckBox.SetBinding(CheckBox.IsCheckedProperty, "ListCBIsChecked");
                     si.ListCheckBox.SetBinding(CheckBox.ColorProperty, "ListCBColor");
                     si.ListCheckBox.IsEnabled = false;
-                    if (si.ListCBIsChecked)
-                    {
-                        si.ListCBColor = Color.GreenYellow;
-                        si.Decorations = TextDecorations.Strikethrough;
-                    }
-                    else
-                    {
-                        si.ListCBColor = Color.Default;
-                        si.Decorations = TextDecorations.None;
-                    }
+                  
+                    
+                   
                     return new ViewCell
                     {
                         View = new StackLayout
@@ -353,99 +346,9 @@ namespace Shoppinglist.Models
             Grid.SetRow(gridStricked, 3);
             grid.Children.Add(gridStricked);
         }
-
-        private void ListViewStrikedItem_ItemTapped(object sender, ItemTappedEventArgs e)
+        private async void RemoveItem(ShopItems itemData, string categorie)
         {
-           // mainPageViewModel.StrikedItemsToDO(sender, listViewStrikedItem, myShop, savedLists);
-            var itemData = (sender as ListView).SelectedItem as ShopItems;
-            List<ShopItems> categorieList = new List<ShopItems>();
-            switch (itemData.Typ)
-            {
-                case "Drogerie": categorieList = drogerie_List;break;
-                case "Milchprodukte": categorieList = milch_list;break;
-                case "Snacks": categorieList = snacks_List; break;
-                case "Tiernahrung": categorieList = tiernahrung_List; break;
-                case "Tee/Kaffee/Brot": categorieList = kaffee_List; break;
-                case "Getränke": categorieList = getraenke_List; break;
-                case "Teig-/Trockenwaren": categorieList = teig_Trocken_List; break;
-                case "Fleisch/Wurst/Fisch": categorieList = fleisch_List; break;
-                case "Tiefkühlwaren": categorieList = tiefkuehl_List; break;
-                case "Obst & Gemüse": categorieList = obst_List; break;
-                default: categorieList = sonstiges_List;break;
-            }
-            if (itemData.ListCBIsChecked == false)
-            {
-                itemData.ListCBIsChecked = true;
 
-            }
-            else
-            {
-                itemData.ListCBIsChecked = false;
-                strikedItemList.Remove(itemData);
-                if (!(categorieList.Contains(itemData)))
-                {
-                    bool hit = false;
-                    itemData.ListCheckBox = new CheckBox();
-                    itemData.ListCheckBox.IsChecked = false;
-                    for (int i = 0; i < App.Db.GetAllItemsAsync().Result.Count; i++)
-                    {
-                        if (App.Db.GetAllItemsAsync().Result[i].Tag == itemData.Tag)
-                        {
-                            hit = true;
-                        }
-                    }
-                    if (hit == false)
-                    {
-                      mainPageViewModel.AddItemToDB(itemData.Tag, itemData.ListTag, itemData.ItemName, itemData.Typ);
-                    }
-
-                    for (int i = 0; i < App.Db.GetAllItemsAsync().Result.Count; i++)
-                    { // ein tag hinzufügen
-                        if (App.Db.GetAllItemsAsync().Result[i].Tag == itemData.Tag)
-                        {
-                            ShopItems si = App.Db.GetAllItemsAsync().Result[i];
-                            if (!(categorieList.Contains(si)))
-                                categorieList.Add(si);
-                        }
-                    }
-                }
-
-            }
-            listItemView.SelectedItem = null;
-            ListStrikedItems(itemData);
-            mainPageViewModel.SetInfoToDoDone();
-        }
-
-        private async void ListItemView_ItemTapped(object sender, ItemTappedEventArgs e)
-        {
-            var itemData = (sender as ListView).SelectedItem as ShopItems;
-            switch (itemData.Typ)
-            {
-                case "Drogerie": RemoveItem(itemData, "Drogerie"); break;
-                case "Milchprodukte": RemoveItem(itemData, "Milchprodukte"); break;
-                case "Snacks": RemoveItem(itemData, "Snacks"); break;
-                case "Tiernahrung": RemoveItem(itemData, "Tiernahrung"); break;
-                case "Tee/Kaffee/Brot": RemoveItem(itemData,"Tee/Kaffee/Brot"); break;
-                case "Getränke": RemoveItem(itemData, "Getränke"); break;
-                case "Teig-/Trockenwaren": RemoveItem(itemData, "Teig-/Trockenwaren"); break;
-                case "Fleisch/Wurst/Fisch": RemoveItem(itemData, "Fleisch/Wurst/Fisch"); break;
-                case "Tiefkühlwaren": RemoveItem(itemData, "Tiefkühlwaren"); break;
-                case "Obst & Gemüse": RemoveItem(itemData, "Obst & gemüse"); break;
-                default: RemoveItem(itemData,"Sonstiges"); break;
-            }
-           
-            listItemView.SelectedItem = null;
-
-            // ListItemView(itemData.ListTag, itemData);
-
-            await SetCategories(itemData);
-            mainPageViewModel.SetInfoToDoDone();
-            
-        }
-
-        private void RemoveItem(ShopItems itemData, string categorie)
-        { 
-           
             if (itemData.ListCBIsChecked == false)
             {
                 itemData.ListCBIsChecked = true;
@@ -459,14 +362,20 @@ namespace Shoppinglist.Models
                     case "Fleisch/Wurst/Fisch": fleisch_List.Remove(itemData); break;
                     case "Tiefkühlwaren": tiefkuehl_List.Remove(itemData); break;
                     case "Obst & Gemüse": obst_List.Remove(itemData); break;
+                    case "Tee/Kaffee/Brot": kaffee_List.Remove(itemData); break;
+                    case "Süßigkeiten": suessikeiten_List.Remove(itemData); break;
+                    case "": defaultList.Remove(itemData); break;
                     default: sonstiges_List.Remove(itemData); break;
                 }
-                
+
                 itemData.ListCheckBox = new CheckBox();
                 itemData.ListCheckBox.IsChecked = true;
+                itemData.ListCBIsChecked = true;
+                itemData.ListCBColor = Color.YellowGreen;
+                itemData.Decorations = TextDecorations.Strikethrough;
                 strikedItemList.Add(itemData);
-                CallDelete(itemData.Id);
-              
+                await DeleteFromDB(itemData.Id);
+
             }
             else
             {
@@ -479,33 +388,180 @@ namespace Shoppinglist.Models
         {
             //hier darf immer nur die liste enthalten sein die aktuell gewählt wurde
 
-            var db = App.Db;
+             var db = App.Db;
             switch (categorie)
             {
-                case "Drogerie": AddtoDrogerieList("Drogerie", listTag, db); break;
-                case "Milchprodukte": AddtoMilchProdukteList("Milchprodukte", listTag, db); break;
-                case "Snacks": AddtoSnacksList("Snacks", listTag,db); break;
-                case "Tiernahrung": AddtoTiernahrungList("Tiernahrung", listTag, db); break;
-                case "Tee/Kaffee/Brot": AddtoTee_KaffeeList("Tee/Kaffee/Brot",listTag, db); break;
-                case "Getränke": AddtoGetraenkeList("Getränke", listTag, db); break;
-                case "Teig-/Trockenwaren": AddtoTrockenwarenList("Teig-/Trockenwaren", listTag, db) ; break;
-                case "Fleisch/Wurst/Fisch": AddtoFleischList("Fleisch/Wurst/Fisch", listTag, db); break;
-                case "Tiefkühlwaren": AddtoTiefkuehlList("Tiefkühlwaren", listTag, db); break;
-                case "Obst & Gemüse": AddtoObstList("Obst & Gemüse", listTag, db); break;
+                case "Drogerie": AddtoList(categorie, listTag, db, drogerie_List); break;
+                case "Milchprodukte": AddtoList(categorie, listTag, db, milch_list); break;
+                case "Snacks": AddtoList(categorie, listTag, db, snacks_List); break;
+                case "Tiernahrung": AddtoList(categorie, listTag, db, tiernahrung_List); break;
+                case "Tee/Kaffee/Brot": AddtoList(categorie, listTag, db, kaffee_List); break;
+                case "Getränke": AddtoList(categorie, listTag, db, getraenke_List); break;
+                case "Teig-/Trockenwaren": AddtoList(categorie, listTag, db, teig_Trocken_List); break;
+                case "Fleisch/Wurst/Fisch": AddtoList(categorie, listTag, db, fleisch_List); break;
+                case "Tiefkühlwaren": AddtoList(categorie, listTag, db, tiefkuehl_List); break;
+                case "Obst & Gemüse": AddtoList(categorie, listTag, db, obst_List); break;
+                case "Süßigkeiten": AddtoList(categorie, listTag, db, suessikeiten_List); break;
                 case "": AddtoDefaultList(listTag, db); break;
-                default: AddtoSonstigesList("Sonstiges", listTag, db); break;
+                default: AddtoList("Sonstiges", listTag, db, sonstiges_List); break;
+            }
+
+        }
+       
+        private async Task DeleteFromDB(int id)
+        {
+            await App.Db.DeleteItemAsync(id);
+        }
+        #endregion Methods
+        #region Events
+        private async void ListViewStrikedItem_ItemTapped(object sender, ItemTappedEventArgs e)
+        {
+           // mainPageViewModel.StrikedItemsToDO(sender, listViewStrikedItem, myShop, savedLists);
+            var itemData = (sender as ListView).SelectedItem as ShopItems;
+           
+            if (itemData.ListCBIsChecked == false)
+            {
+                itemData.ListCBIsChecked = true;
+            }
+            else
+            {
+                itemData.ListCBIsChecked = false;
+                strikedItemList.Remove(itemData);
+                string typ = itemData.Typ;
+                if (myShop.Name == "Keinen")
+                {
+                    typ = "";
+                }
+
+                if (!(GetItemSource(typ).Contains(itemData)))
+                {
+                    bool hit = false;
+                    itemData.ListCheckBox = new CheckBox();
+                    itemData.ListCheckBox.IsChecked = false;
+                    var db = App.Db;
+                    for (int i = 0; i < db.GetAllItemsAsync().Result.Count; i++)
+                    {
+                        if (db.GetAllItemsAsync().Result[i].Tag == itemData.Tag)
+                        {
+                            hit = true;
+                        }
+                    }
+                    if (hit == false)
+                    {
+                      await mainPageViewModel.AddItemToDB(itemData.Tag, itemData.ListTag, itemData.ItemName, itemData.Typ);
+                    }
+
+                    for (int i = 0; i < db.GetAllItemsAsync().Result.Count; i++)
+                    { // ein tag hinzufügen
+                        if (db.GetAllItemsAsync().Result[i].Tag == itemData.Tag)
+                        {
+                            ShopItems si = db.GetAllItemsAsync().Result[i];
+                            if (!(GetItemSource(typ).Contains(si)))
+                                GetItemSource(typ).Add(si);
+                        }
+                    }
+                }
+
+            }
+            listViewStrikedItem.SelectedItem = null;
+            await SetCategories(itemData);
+            mainPageViewModel.SetInfoToDoDone();
+        }
+
+        private void ListItemView_ItemTapped(object sender, ItemTappedEventArgs e)
+        {
+            var itemData = (sender as ListView).SelectedItem as ShopItems;
+            string typ = itemData.Typ;
+            if (myShop.Name == "Keinen")
+            {
+                typ = "";
+            }
+            switch (typ)
+            {
+                case "Drogerie": RemoveItem(itemData, typ); break;
+                case "Milchprodukte": RemoveItem(itemData, typ); break;
+                case "Snacks": RemoveItem(itemData, typ); break;
+                case "Tiernahrung": RemoveItem(itemData, typ); break;
+                case "Tee/Kaffee/Brot": RemoveItem(itemData,typ ); break;
+                case "Getränke": RemoveItem(itemData, typ); break;
+                case "Teig-/Trockenwaren": RemoveItem(itemData, typ); break;
+                case "Fleisch/Wurst/Fisch": RemoveItem(itemData, typ); break;
+                case "Tiefkühlwaren": RemoveItem(itemData, typ); break;
+                case "Obst & Gemüse": RemoveItem(itemData, typ); break;
+                case "Süßigkeiten": RemoveItem(itemData, typ); break;
+                case "": RemoveItem(itemData, typ); break;
+                default: RemoveItem(itemData,"Sonstiges"); break;
             }
            
+            (sender as ListView).SelectedItem = null;
+            (sender as ListView).ItemsSource = null;
+            if (myShop.Name == "Keinen")
+            {
+                (sender as ListView).ItemsSource = GetItemSource("");
+            }
+            else
+            {
+                (sender as ListView).ItemsSource = GetItemSource(typ);
+            }
+           
+            // Wenn eine Liste leer ist soll die entsprechende Categorie + ListView aus dem grid entfernt werden
+            // zum identifizieren der Labels und der Grids wurden sie in einer generischen Liste gespeichert
+            if (GetItemSource(typ).Count == 0 && !(typ == ""))
+            {
+                // categorieGrid.Children.Remove();
+                foreach (var item in categorieLabels)
+                {
+                    if (item.Text == typ)
+                    {
+                        foreach (var grid in categorieGrids)
+                        {
+                            if (grid.Children.Contains(item))
+                            {
+                                grid.Children.Remove(item);
+                                grid.Children.Remove((sender as ListView));
+                            }
+                        }
+                        
+                    }
+                }
+            }
+            listViewStrikedItem.ItemsSource = null;
+            listViewStrikedItem.ItemsSource = strikedItemList;
+            
+            mainPageViewModel.SetInfoToDoDone();
+            // ListItemView(itemData.ListTag, itemData);
+
+
+
+
         }
-        private void CallDelete(int id)
-        {
-            DeleteFromDB(id);
-        }
-        private async void DeleteFromDB(int id)
-        {
-           await App.Db.DeleteItemAsync(id);
-        }
+        #endregion Events
+
         #region Add to list
+        private void AddtoList(string categorie, string listTag, Database db, List<ShopItems> list)
+        {
+            list.Clear();
+
+            if (db.GetAllItemsAsync().Result.Count > 0)
+            {
+
+
+                for (int i = 0; i < db.GetDBCount().Result; i++)
+                {
+                    if (db.GetAllItemsAsync().Result[i].ListTag == listTag)
+                    {
+                        if (db.GetAllItemsAsync().Result[i].Typ == categorie)
+                        {
+                            list.Add(db.GetAllItemsAsync().Result[i]);
+                        }
+
+                    }
+                }
+
+            }
+        }
+       
+      
         private void AddtoDefaultList(string listTag, Database db)
         {
             defaultList.Clear();
@@ -524,248 +580,8 @@ namespace Shoppinglist.Models
 
             }
         }
-        private void AddtoSonstigesList(string categorie, string listTag, Database db)
-        {
-            sonstiges_List.Clear();
-
-            if (db.GetAllItemsAsync().Result.Count > 0)
-            {
-
-
-                for (int i = 0; i < db.GetDBCount().Result; i++)
-                {
-                    if (db.GetAllItemsAsync().Result[i].ListTag == listTag)
-                    {
-                        if (db.GetAllItemsAsync().Result[i].Typ == categorie)
-                        {
-                            sonstiges_List.Add(db.GetAllItemsAsync().Result[i]);
-                        }
-
-                    }
-                }
-
-            }
-        }
-        private void AddtoObstList(string categorie, string listTag, Database db)
-        {
-           obst_List.Clear();
-
-            if (db.GetAllItemsAsync().Result.Count > 0)
-            {
-
-
-                for (int i = 0; i < db.GetDBCount().Result; i++)
-                {
-                    if (db.GetAllItemsAsync().Result[i].ListTag == listTag)
-                    {
-                        if (db.GetAllItemsAsync().Result[i].Typ == categorie)
-                        {
-                            obst_List.Add(db.GetAllItemsAsync().Result[i]);
-                        }
-
-                    }
-                }
-
-            }
-        }
-        private void AddtoTiefkuehlList(string categorie, string listTag, Database db)
-        {
-            tiefkuehl_List.Clear();
-
-            if (db.GetAllItemsAsync().Result.Count > 0)
-            {
-
-
-                for (int i = 0; i < db.GetDBCount().Result; i++)
-                {
-                    if (db.GetAllItemsAsync().Result[i].ListTag == listTag)
-                    {
-                        if (db.GetAllItemsAsync().Result[i].Typ == categorie)
-                        {
-                            tiefkuehl_List.Add(db.GetAllItemsAsync().Result[i]);
-                        }
-
-                    }
-                }
-
-            }
-        }
-        private void AddtoFleischList(string categorie, string listTag, Database db)
-        {
-            fleisch_List.Clear();
-
-            if (db.GetAllItemsAsync().Result.Count > 0)
-            {
-
-
-                for (int i = 0; i < db.GetDBCount().Result; i++)
-                {
-                    if (db.GetAllItemsAsync().Result[i].ListTag == listTag)
-                    {
-                        if (db.GetAllItemsAsync().Result[i].Typ == categorie)
-                        {
-                            fleisch_List.Add(db.GetAllItemsAsync().Result[i]);
-                        }
-
-                    }
-                }
-
-            }
-        }
-        private void AddtoTrockenwarenList(string categorie, string listTag, Database db)
-        {
-            teig_Trocken_List.Clear();
-
-            if (db.GetAllItemsAsync().Result.Count > 0)
-            {
-
-
-                for (int i = 0; i < db.GetDBCount().Result; i++)
-                {
-                    if (db.GetAllItemsAsync().Result[i].ListTag == listTag)
-                    {
-                        if (db.GetAllItemsAsync().Result[i].Typ == categorie)
-                        {
-                            teig_Trocken_List.Add(db.GetAllItemsAsync().Result[i]);
-                        }
-
-                    }
-                }
-
-            }
-        }
-        private void AddtoGetraenkeList(string categorie, string listTag, Database db)
-        {
-            getraenke_List.Clear();
-
-            if (db.GetAllItemsAsync().Result.Count > 0)
-            {
-
-
-                for (int i = 0; i < db.GetDBCount().Result; i++)
-                {
-                    if (db.GetAllItemsAsync().Result[i].ListTag == listTag)
-                    {
-                        if (db.GetAllItemsAsync().Result[i].Typ == categorie)
-                        {
-                            getraenke_List.Add(db.GetAllItemsAsync().Result[i]);
-                        }
-
-                    }
-                }
-
-            }
-        }
-        private void AddtoTee_KaffeeList(string categorie, string listTag, Database db)
-        {
-            kaffee_List.Clear();
-
-            if (db.GetAllItemsAsync().Result.Count > 0)
-            {
-
-
-                for (int i = 0; i < db.GetDBCount().Result; i++)
-                {
-                    if (db.GetAllItemsAsync().Result[i].ListTag == listTag)
-                    {
-                        if (db.GetAllItemsAsync().Result[i].Typ == categorie)
-                        {
-                           kaffee_List.Add(db.GetAllItemsAsync().Result[i]);
-                        }
-
-                    }
-                }
-
-            }
-        }
-        private void AddtoTiernahrungList(string categorie, string listTag, Database db)
-        {
-            tiernahrung_List.Clear();
-
-            if (db.GetAllItemsAsync().Result.Count > 0)
-            {
-
-
-                for (int i = 0; i < db.GetDBCount().Result; i++)
-                {
-                    if (db.GetAllItemsAsync().Result[i].ListTag == listTag)
-                    {
-                        if (db.GetAllItemsAsync().Result[i].Typ == categorie)
-                        {
-                            tiernahrung_List.Add(db.GetAllItemsAsync().Result[i]);
-                        }
-
-                    }
-                }
-
-            }
-        }
-        private void AddtoDrogerieList(string categorie, string listTag, Database db)
-        {
-            drogerie_List.Clear();
-
-            if (db.GetAllItemsAsync().Result.Count > 0)
-            {
-
-
-                for (int i = 0; i < db.GetDBCount().Result; i++)
-                {
-                    if (db.GetAllItemsAsync().Result[i].ListTag == listTag)
-                    {
-                        if (db.GetAllItemsAsync().Result[i].Typ == categorie)
-                        {
-                            drogerie_List.Add(db.GetAllItemsAsync().Result[i]);
-                        }
-
-                    }
-                }
-
-            }
-        }
-        private void AddtoMilchProdukteList(string categorie, string listTag, Database db)
-        {
-            milch_list.Clear();
-
-            if (db.GetAllItemsAsync().Result.Count > 0)
-            {
-
-
-                for (int i = 0; i < db.GetDBCount().Result; i++)
-                {
-                    if (db.GetAllItemsAsync().Result[i].ListTag == listTag)
-                    {
-                        if (db.GetAllItemsAsync().Result[i].Typ == categorie)
-                        {
-                            milch_list.Add(db.GetAllItemsAsync().Result[i]);
-                        }
-
-                    }
-                }
-
-            }
-        }
-        private void AddtoSnacksList(string categorie, string listTag, Database db)
-        {
-            snacks_List.Clear();
-
-            if (db.GetAllItemsAsync().Result.Count > 0)
-            {
-
-
-                for (int i = 0; i < db.GetDBCount().Result; i++)
-                {
-                    if (db.GetAllItemsAsync().Result[i].ListTag == listTag)
-                    {
-                        if (db.GetAllItemsAsync().Result[i].Typ == categorie)
-                        {
-                            snacks_List.Add(db.GetAllItemsAsync().Result[i]);
-                        }
-
-                    }
-                }
-
-            }
-        }
+     
+      
         #endregion Add to List
     }
 }

@@ -18,7 +18,7 @@ namespace Shoppinglist
             {
                 if (db == null)
                 {
-                    db = new Database(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ShoppingList.db13"));
+                    db = new Database(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ShoppingList.db14"));
                 }
                 return db;
             }
@@ -29,7 +29,7 @@ namespace Shoppinglist
             {
                 if (dbLists == null)
                 {
-                    dbLists = new DatabaseLists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Listen.db11"));
+                    dbLists = new DatabaseLists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Listen.db12"));
                 }
                 return dbLists;
             }
@@ -40,7 +40,7 @@ namespace Shoppinglist
             {
                 if (dbBYS == null)
                 {
-                    dbBYS = new DatabaseBuildYourShop(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Shop.db1"));
+                    dbBYS = new DatabaseBuildYourShop(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Shop.db2"));
                 }
                 return dbBYS;
             }

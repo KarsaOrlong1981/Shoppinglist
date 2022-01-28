@@ -32,8 +32,7 @@ Baby bel
 Babybel
 Käse
 Gouda
-Edammer
-Edamer
+Erdammer
 Sylter
 Camembert
 Brie
@@ -61,5 +60,7 @@ Büffelkäse
 Schmelzkäsezubereitung
 Cremefine 15%
 Cremefine
-Kochcreme
-Koch creme
+
+
+
+

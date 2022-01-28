@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage BackgroundColor="LightGray" Padding="10" xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Shoppinglist.Views.DeleteMyShopView">
+    <Grid x:Name="mainGrid">
+        <ScrollView  >
+            <Grid x:Name="grid" 
+              HorizontalOptions="Fill" 
+              >
+                <Grid.RowDefinitions >
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Frame Grid.Row="0" CornerRadius="10" x:Name="frame">
+                    <StackLayout >
+                        <Image Source="hinweis48.png" HorizontalOptions="CenterAndExpand"  />
+                        <Label Text="Tippe auf einen Shop, um in zu entfernen" FontSize="16" BackgroundColor="White" TextColor="Black" HorizontalTextAlignment="Center" />
+                    </StackLayout>
+                </Frame>
+            </Grid>
+        </ScrollView>
+
+    </Grid>
+</ContentPage>

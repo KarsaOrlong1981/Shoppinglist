@@ -24,6 +24,7 @@ namespace Shoppinglist.Models
         public string Lab9 { get; set; }
         public string Lab10 { get; set; }
         public string Lab11 { get; set; }
+        public string Lab12 { get; set; }
 
 
     }
