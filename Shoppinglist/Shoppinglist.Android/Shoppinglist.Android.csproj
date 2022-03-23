@@ -120,15 +120,6 @@
     <AndroidResource Include="Resources\drawable\this24.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\DrogerieItems.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Obst_Gemuese.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\Tiefkuehlwaren.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidAsset Include="Assets\Getraenke.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -162,10 +153,19 @@
     <AndroidAsset Include="Assets\Suessigkeiten.txt" />
   </ItemGroup>
   <ItemGroup>
+    <AndroidAsset Include="Assets\MilchprodukteItems.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\DrogerieItems.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\Obst_Gemuese.txt" />
+  </ItemGroup>
+  <ItemGroup>
     <AndroidAsset Include="Assets\AllItems.txt" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\MilchprodukteItems.txt" />
+    <AndroidAsset Include="Assets\Tiefkuehlwaren.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <ProjectExtensions>

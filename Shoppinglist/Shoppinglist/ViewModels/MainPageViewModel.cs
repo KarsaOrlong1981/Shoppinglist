@@ -706,13 +706,12 @@ namespace Shoppinglist.ViewModels
             {
                 mainGrid.Children.Remove(searchresult);
             }
-            
                searchResult_String_List.Clear();
                searchResultList.Clear();
                SearchResultItem searchResultItem;
                string input = (sender as Entry).Text;
                input = input.ToUpper();
-           if (input.Length > 2)
+           if (input.Length > 1)
            {
                foreach (var item in allItems)
                {
@@ -734,9 +733,6 @@ namespace Shoppinglist.ViewModels
                     searchresult = CreateSearchResultAndSet();
                     searchresult.ItemTapped += Searchresult_ItemTapped;
                }
-                    
-              
-               
            }
 
         }
@@ -892,19 +888,6 @@ namespace Shoppinglist.ViewModels
             listNamesView.SelectedItem = null;
 
         }
-       
-
-        
-      
-
-       
-
-
-        //Event liste unten
-        
-
-       
-
         private void Btn_Clicked(object sender, EventArgs e)
         {
             string options = (sender as Button).Text;
@@ -1018,6 +1001,7 @@ namespace Shoppinglist.ViewModels
         private void GetShopNames()
         {
             var dbBYS = App.DbBYS;
+            string testChanges = string.Empty;
             MyShop myShopDefault = new MyShop
             {
                 Name = "Standard",
@@ -1085,12 +1069,10 @@ namespace Shoppinglist.ViewModels
             {
                 CreateLabel("Keine Liste vorhanden", LayoutOptions.CenterAndExpand, LayoutOptions.CenterAndExpand, string.Empty, 3);
             }
+           
         }
         #endregion Database
-        #region Next Step
-      
-      
-        #endregion Next Step
+       
         //Testing area
         private static void SelectAllFromDb()
         {
