@@ -12,13 +12,17 @@ namespace Shoppinglist.Models
         private Grid grid, categorieGrid;
         private MyShop myShop;
         private MainPage mainPage;
-        private List<ShopItems> strikedItemList, defaultList, suessikeiten_List, drogerie_List, kaffee_List, snacks_List, teig_Trocken_List, tiernahrung_List, getraenke_List, tiefkuehl_List, fleisch_List, milch_list, obst_List, sonstiges_List;
+        private ShopItems shopItem;
+        private List<ShopItems> strikedItemList, defaultList, suessikeiten_List, drogerie_List, kaffee_List
+                              , snacks_List, teig_Trocken_List, tiernahrung_List, getraenke_List, tiefkuehl_List, fleisch_List
+                              , milch_list, obst_List, sonstiges_List, allEmptyList;
         private SavedLists savedLists;
         private MainPageViewModel mainPageViewModel;
         private ListView listItemView, listViewStrikedItem;
         private List<Label> categorieLabels;
         private List<Grid> categorieGrids;
-        
+        private List<ShopItems>[] allLists;
+        private bool isAllListEmpty;
         public Categories(Grid grid, MyShop myShop, MainPage mainPage, SavedLists savedLists, MainPageViewModel mainPageViewModel)
         {
             this.grid = grid;
@@ -38,13 +42,14 @@ namespace Shoppinglist.Models
             milch_list = new List<ShopItems>();
             obst_List = new List<ShopItems>();
             sonstiges_List = new List<ShopItems>();
+            allEmptyList = new List<ShopItems>();
             categorieLabels = new List<Label>();
             categorieLabels.Clear();
             categorieGrids = new List<Grid>();
             categorieGrids.Clear();
             this.savedLists = savedLists;
             this.mainPageViewModel = mainPageViewModel;
-            
+            isAllListEmpty = false;
             grid.Children.Clear();
         }
         #region Methods
@@ -86,9 +91,22 @@ namespace Shoppinglist.Models
             grid.Children.Clear();
             NewCategorieGrid();
             await Task.Run(() => AddItemsToCategorie());
-            if (myShop.Name == "Keinen")
+           
+            if (IsAllListEmpty())
             {
-                ListItemView(shopItems, savedLists.ListName, "", 0);
+                shopItem = new ShopItems { ItemName = "Keine Einträge mehr vorhanden." };
+                allEmptyList.Add(shopItem);
+                isAllListEmpty = true;
+               
+            }
+            if (myShop.Name == "Keinen" || isAllListEmpty == true)
+            {
+                switch (isAllListEmpty)
+                {
+                    case true: ListItemView(shopItems, savedLists.ListName, "Leere Liste", 0); break;
+                    case false: ListItemView(shopItems, savedLists.ListName, "", 0); break;
+                }
+                
             }
             else
             {
@@ -124,7 +142,8 @@ namespace Shoppinglist.Models
             LoadListFromDB("Obst & Gemüse", savedLists.Tag);
             LoadListFromDB("Sonstiges", savedLists.Tag);
             LoadListFromDB("", savedLists.Tag);
-
+            allLists = new List<ShopItems>[] { strikedItemList, drogerie_List, kaffee_List, suessikeiten_List, snacks_List, teig_Trocken_List, tiernahrung_List, getraenke_List,
+                                               tiefkuehl_List, fleisch_List, milch_list, obst_List, sonstiges_List};
         }
         private void ListItemView(ShopItems si,string title, string categorie, short row)
         {
@@ -180,6 +199,10 @@ namespace Shoppinglist.Models
                         si.ListCheckBox.SetBinding(CheckBox.IsCheckedProperty, "ListCBIsChecked");
                         si.ListCheckBox.SetBinding(CheckBox.ColorProperty, "ListCBColor");
                         si.ListCheckBox.IsEnabled = false;
+                        if (isAllListEmpty == true)
+                        {
+                            si.ListCheckBox.IsVisible = false;
+                        }
                         if (si.ListCBIsChecked)
                         {
                             si.ListCBColor = Color.GreenYellow;
@@ -215,8 +238,10 @@ namespace Shoppinglist.Models
                     })
                 };
                 // GetItemSource(categorie);
-
+              
                 listItemView.ItemTapped += ListItemView_ItemTapped;
+                
+              
                 Grid.SetRow(lab_Categorie, 0);
                 Grid.SetRow(listItemView, 1);
                 gridStricked.Children.Add(lab_Categorie);
@@ -264,22 +289,27 @@ namespace Shoppinglist.Models
 
         private List<ShopItems> GetItemSource(string categorie)
         {
-            switch (categorie)
-            {
-                case "Drogerie": return drogerie_List;
-                case "Milchprodukte": return milch_list;
-                case "Snacks": return snacks_List;
-                case "Tiernahrung": return tiernahrung_List; 
-                case "Tee/Kaffee/Brot": return kaffee_List;
-                case "Getränke": return getraenke_List;
-                case "Teig-/Trockenwaren": return teig_Trocken_List; 
-                case "Fleisch/Wurst/Fisch": return fleisch_List; 
-                case "Tiefkühlwaren":return tiefkuehl_List; 
-                case "Obst & Gemüse": return obst_List;
-                case "Süßigkeiten": return suessikeiten_List;
-                case "": return defaultList;
-                default: return sonstiges_List; 
-            }
+          
+          
+                switch (categorie)
+                {
+                    case "Drogerie": return drogerie_List;
+                    case "Milchprodukte": return milch_list;
+                    case "Snacks": return snacks_List;
+                    case "Tiernahrung": return tiernahrung_List;
+                    case "Tee/Kaffee/Brot": return kaffee_List;
+                    case "Getränke": return getraenke_List;
+                    case "Teig-/Trockenwaren": return teig_Trocken_List;
+                    case "Fleisch/Wurst/Fisch": return fleisch_List;
+                    case "Tiefkühlwaren": return tiefkuehl_List;
+                    case "Obst & Gemüse": return obst_List;
+                    case "Süßigkeiten": return suessikeiten_List;
+                    case "": return defaultList;
+                    case "Leere Liste": return allEmptyList;
+                    default: return sonstiges_List;
+                }
+            
+           
         }
 
         private void ListStrikedItems(ShopItems si)
@@ -314,8 +344,6 @@ namespace Shoppinglist.Models
                     si.ListCheckBox.SetBinding(CheckBox.IsCheckedProperty, "ListCBIsChecked");
                     si.ListCheckBox.SetBinding(CheckBox.ColorProperty, "ListCBColor");
                     si.ListCheckBox.IsEnabled = false;
-                  
-                    
                    
                     return new ViewCell
                     {
@@ -470,66 +498,75 @@ namespace Shoppinglist.Models
 
         private void ListItemView_ItemTapped(object sender, ItemTappedEventArgs e)
         {
-            var itemData = (sender as ListView).SelectedItem as ShopItems;
-            string typ = itemData.Typ;
-            if (myShop.Name == "Keinen")
-            {
-                typ = "";
-            }
-            switch (typ)
-            {
-                case "Drogerie": RemoveItem(itemData, typ); break;
-                case "Milchprodukte": RemoveItem(itemData, typ); break;
-                case "Snacks": RemoveItem(itemData, typ); break;
-                case "Tiernahrung": RemoveItem(itemData, typ); break;
-                case "Tee/Kaffee/Brot": RemoveItem(itemData,typ ); break;
-                case "Getränke": RemoveItem(itemData, typ); break;
-                case "Teig-/Trockenwaren": RemoveItem(itemData, typ); break;
-                case "Fleisch/Wurst/Fisch": RemoveItem(itemData, typ); break;
-                case "Tiefkühlwaren": RemoveItem(itemData, typ); break;
-                case "Obst & Gemüse": RemoveItem(itemData, typ); break;
-                case "Süßigkeiten": RemoveItem(itemData, typ); break;
-                case "": RemoveItem(itemData, typ); break;
-                default: RemoveItem(itemData,"Sonstiges"); break;
-            }
            
-            (sender as ListView).SelectedItem = null;
-            (sender as ListView).ItemsSource = null;
-            if (myShop.Name == "Keinen")
+            var itemData = (sender as ListView).SelectedItem as ShopItems;
+            if (isAllListEmpty)
             {
-                (sender as ListView).ItemsSource = GetItemSource("");
+                (sender as ListView).SelectedItem = null;
             }
             else
             {
-                (sender as ListView).ItemsSource = GetItemSource(typ);
-            }
-           
-            // Wenn eine Liste leer ist soll die entsprechende Categorie + ListView aus dem grid entfernt werden
-            // zum identifizieren der Labels und der Grids wurden sie in einer generischen Liste gespeichert
-            if (GetItemSource(typ).Count == 0 && !(typ == ""))
-            {
-                // categorieGrid.Children.Remove();
-                foreach (var item in categorieLabels)
+                string typ = itemData.Typ;
+                if (myShop.Name == "Keinen")
                 {
-                    if (item.Text == typ)
+                    typ = "";
+                }
+                switch (typ)
+                {
+                    case "Drogerie": RemoveItem(itemData, typ); break;
+                    case "Milchprodukte": RemoveItem(itemData, typ); break;
+                    case "Snacks": RemoveItem(itemData, typ); break;
+                    case "Tiernahrung": RemoveItem(itemData, typ); break;
+                    case "Tee/Kaffee/Brot": RemoveItem(itemData, typ); break;
+                    case "Getränke": RemoveItem(itemData, typ); break;
+                    case "Teig-/Trockenwaren": RemoveItem(itemData, typ); break;
+                    case "Fleisch/Wurst/Fisch": RemoveItem(itemData, typ); break;
+                    case "Tiefkühlwaren": RemoveItem(itemData, typ); break;
+                    case "Obst & Gemüse": RemoveItem(itemData, typ); break;
+                    case "Süßigkeiten": RemoveItem(itemData, typ); break;
+                    case "": RemoveItem(itemData, typ); break;
+                    default: RemoveItem(itemData, "Sonstiges"); break;
+                }
+
+            (sender as ListView).SelectedItem = null;
+                (sender as ListView).ItemsSource = null;
+                if (myShop.Name == "Keinen")
+                {
+                    (sender as ListView).ItemsSource = GetItemSource("");
+                }
+                else
+                {
+                    (sender as ListView).ItemsSource = GetItemSource(typ);
+                }
+
+                // Wenn eine Liste leer ist soll die entsprechende Categorie + ListView aus dem grid entfernt werden
+                // zum identifizieren der Labels und der Grids wurden sie in einer generischen Liste gespeichert
+                if (GetItemSource(typ).Count == 0 && !(typ == ""))
+                {
+                    // categorieGrid.Children.Remove();
+                    foreach (var item in categorieLabels)
                     {
-                        foreach (var grid in categorieGrids)
+                        if (item.Text == typ)
                         {
-                            if (grid.Children.Contains(item))
+                            foreach (var grid in categorieGrids)
                             {
-                                grid.Children.Remove(item);
-                                grid.Children.Remove((sender as ListView));
+                                if (grid.Children.Contains(item))
+                                {
+                                    grid.Children.Remove(item);
+                                    grid.Children.Remove((sender as ListView));
+                                }
                             }
+
                         }
-                        
                     }
                 }
+                listViewStrikedItem.ItemsSource = null;
+                listViewStrikedItem.ItemsSource = strikedItemList;
+
+                mainPageViewModel.SetInfoToDoDone();
+                // ListItemView(itemData.ListTag, itemData);
             }
-            listViewStrikedItem.ItemsSource = null;
-            listViewStrikedItem.ItemsSource = strikedItemList;
-            
-            mainPageViewModel.SetInfoToDoDone();
-            // ListItemView(itemData.ListTag, itemData);
+
 
 
 
@@ -559,6 +596,7 @@ namespace Shoppinglist.Models
                 }
 
             }
+           
         }
        
       
@@ -580,8 +618,19 @@ namespace Shoppinglist.Models
 
             }
         }
-     
-      
+        private bool IsAllListEmpty()
+        {
+            bool empty = true;
+            foreach (var item in allLists)
+            {
+                if (item.Count > 0)
+                {
+                    empty = false;
+                    break;
+                }
+            }
+            return empty;
+        }
         #endregion Add to List
     }
 }

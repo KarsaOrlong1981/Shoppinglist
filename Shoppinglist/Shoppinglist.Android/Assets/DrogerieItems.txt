@@ -31,7 +31,7 @@ Gesundheits Bad
 Waschmittel
 Wasch mittel
 Vollwaschmittel
-Sporttape
+Sprottape
 Sport Tape
 Gleitgel
 Gleit gel
@@ -134,5 +134,5 @@ Reiniger
 Wundschutzcreme
 Wundschutz creme
 Wundschutz
-Gel
-Haar
+Spüli
+Spülmittel
